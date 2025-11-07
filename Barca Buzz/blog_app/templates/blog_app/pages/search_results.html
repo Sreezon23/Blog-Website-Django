@@ -1,0 +1,150 @@
+{% extends "blog_app/base.html" %}
+{% load static %}
+
+{% block title %}Search Results - Barça Buzz{% endblock %}
+
+{% block content %}
+<!-- SEARCH HEADER -->
+<div style="margin-bottom: 40px;">
+    <h1 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 15px; color: #2c2c2c;">
+        <i class="bi bi-search"></i> Search Results
+    </h1>
+    
+    {% if query %}
+    <p style="color: #666; font-size: 1.05rem; margin-bottom: 25px;">
+        Found {{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }} for "<strong>{{ query }}</strong>"
+    </p>
+    
+    <!-- SEARCH BOX -->
+    <form method="get" action="{% url 'search' %}" style="margin-bottom: 30px;">
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search again..." style="
+                flex: 1;
+                padding: 12px 20px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 1rem;
+                transition: border-color 0.3s ease;
+            "
+            onfocus="this.style.borderColor='#4db8c4';"
+            onblur="this.style.borderColor='#e0e0e0';">
+            <button type="submit" class="btn btn-primary" style="background-color: #4db8c4; border: none; font-weight: 600; padding: 12px 30px;">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <p style="color: #999;">Enter a search term to find posts.</p>
+    {% endif %}
+</div>
+
+<!-- RESULTS -->
+{% if posts %}
+<div style="display: grid; gap: 20px;">
+    {% for post in posts %}
+    <div style="background: white; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);"
+    onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.transform='translateY(-2px)';"
+    onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'; this.style.transform='translateY(0)';">
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: 0;">
+            <!-- Image -->
+            <div style="height: 200px;">
+                {% if post.featured_image %}
+                    <img loading="lazy" src="{{ post.featured_image.url }}" alt="{{ post.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #4db8c4 0%, #5dc5d1 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-newspaper" style="font-size: 2.5rem; color: white; opacity: 0.5;"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    {% if post.category %}
+                    <span style="display: inline-block; padding: 4px 12px; background-color: #4db8c4; color: white; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 10px;">
+                        {{ post.category.name }}
+                    </span>
+                    {% endif %}
+                    
+                    <h3 style="margin: 0 0 10px 0; font-weight: 600; font-size: 1.2rem;">
+                        <a href="{{ post.get_absolute_url }}" style="text-decoration: none; color: #2c2c2c;">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+                    
+                    <p style="color: #666; margin: 0 0 15px 0; line-height: 1.5;">
+                        {{ post.excerpt|default:post.text|truncatewords:30 }}
+                    </p>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: center; color: #999; font-size: 0.9rem;">
+                    <span>
+                        <i class="bi bi-person"></i> {{ post.author.first_name|default:post.author.username }}
+                    </span>
+                    <span>
+                        <i class="bi bi-calendar"></i> {{ post.published_date|date:"M d, Y" }}
+                    </span>
+                    <span>
+                        <i class="bi bi-eye"></i> {{ post.views_count }} views
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- PAGINATION -->
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center mt-5 mb-5">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page=1">
+                <i class="bi bi-chevron-double-left"></i> First
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i> Previous
+            </a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">
+                Next <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">
+                Last <i class="bi bi-chevron-double-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div style="text-align: center; padding: 60px 20px;">
+    <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+    <h3 style="color: #666; margin-top: 20px;">No posts found</h3>
+    {% if query %}
+    <p style="color: #999; margin-bottom: 25px;">Try searching with different keywords.</p>
+    {% else %}
+    <p style="color: #999; margin-bottom: 25px;">Enter a search term to find posts.</p>
+    {% endif %}
+    <a href="{% url 'post_list' %}" class="btn btn-primary" style="background-color: #4db8c4; border: none;">
+        <i class="bi bi-arrow-left"></i> Back to All Posts
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

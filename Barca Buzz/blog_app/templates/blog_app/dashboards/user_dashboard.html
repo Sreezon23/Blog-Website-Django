@@ -1,0 +1,163 @@
+{% extends "blog_app/dashboards/dashboard_base.html" %}
+
+{% block dashboard_header %}
+<div>
+    <h1 class="fw-bold user-dashboard-title">
+        <i class="bi bi-person-circle me-2 text-primary"></i>My Dashboard
+    </h1>
+    <p class="text-muted mb-0">Manage your blog and track engagement</p>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <!-- My Posts -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">My Posts</p>
+                        <h2 class="fw-bold text-primary">{{ user_posts }}</h2>
+                    </div>
+                    <i class="bi bi-newspaper dashboard-stat-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Published -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Published</p>
+                        <h2 class="fw-bold text-success">{{ published_posts }}</h2>
+                    </div>
+                    <i class="bi bi-check-circle dashboard-stat-icon dashboard-stat-icon-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drafts -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Drafts</p>
+                        <h2 class="fw-bold text-warning">{{ draft_posts }}</h2>
+                    </div>
+                    <i class="bi bi-file-earmark dashboard-stat-icon dashboard-stat-icon-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Comments</p>
+                        <h2 class="fw-bold text-info">{{ total_comments }}</h2>
+                    </div>
+                    <i class="bi bi-chat-dots dashboard-stat-icon dashboard-stat-icon-info"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row g-4">
+    <!-- My Recent Posts -->
+    <div class="col-lg-6">
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <h5 class="fw-bold mb-0">My Recent Posts</h5>
+                <a href="{% url 'post_new' %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus me-1"></i>New
+                </a>
+            </div>
+            
+            {% for post in my_posts %}
+                <div class="dashboard-post-item">
+                    <div>
+                        <h6 class="mb-1">
+                            <a href="{% url 'post_detail' slug=post.slug %}" class="text-decoration-none">
+                                {{ post.title|truncatewords:8 }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            {{ post.created_date|date:"M d, Y" }} • {{ post.comments.count }} comments
+                        </small>
+                    </div>
+                    <div class="post-actions-group">
+                        <a href="{% url 'post_edit' slug=post.slug %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'post_remove' slug=post.slug %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center py-3">No posts yet. Start writing!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Comments on My Posts -->
+    <div class="col-lg-6">
+        <div class="dashboard-section">
+            <h5 class="dashboard-section-title">Comments on My Posts</h5>
+            
+            {% for comment in my_comments %}
+                <div class="dashboard-comment-item">
+                    <div class="comment-header-row">
+                        <strong>{{ comment.author }}</strong>
+                        <span class="badge {% if comment.approved_comments %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if comment.approved_comments %}Approved{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    <p class="text-muted mb-1 small">
+                        on <a href="{% url 'post_detail' slug=comment.post.slug %}" class="text-decoration-none">
+                            {{ comment.post.title|truncatewords:5 }}
+                        </a>
+                    </p>
+                    <small>{{ comment.text|truncatewords:15 }}</small>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center py-3">No comments yet</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="dashboard-section dashboard-actions-bg">
+            <h5 class="fw-bold mb-3">Quick Actions</h5>
+            <div class="quick-actions-container">
+                <a href="{% url 'post_new' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil-square me-1"></i>Write Post
+                </a>
+                <a href="{% url 'post_draft_list' %}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-file-earmark me-1"></i>View Drafts
+                </a>
+                <a href="{% url 'post_list' %}" class="btn btn-info btn-sm">
+                    <i class="bi bi-eye me-1"></i>View Published
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

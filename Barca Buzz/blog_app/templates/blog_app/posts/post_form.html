@@ -1,0 +1,181 @@
+{% extends "blog_app/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Post{% else %}Create Post{% endif %} - Barça Buzz
+{% endblock %}
+
+{% block content %}
+
+<div class="post-form-container">
+    
+    <!-- Back Link -->
+    <div class="form-back-link">
+        <a href="{% url 'post_list' %}">
+            <i class="bi bi-arrow-left"></i> Back to Posts
+        </a>
+    </div>
+
+    <!-- Form Wrapper -->
+    <div class="form-wrapper">
+        
+        <!-- Header -->
+        <div class="form-header">
+            <h1>
+                {% if form.instance.pk %}
+                    Edit Post
+                {% else %}
+                    Create New Post
+                {% endif %}
+            </h1>
+            
+            <p>
+                {% if form.instance.pk %}
+                    Update your post details below
+                {% else %}
+                    Share your thoughts about FC Barcelona
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Form Errors -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error!</strong>
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Title Field -->
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    <i class="bi bi-pencil-square"></i> Title *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-error">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Excerpt Field -->
+            <div class="form-group">
+                <label for="{{ form.excerpt.id_for_label }}" class="form-label">
+                    <i class="bi bi-journal-text"></i> Excerpt (Optional)
+                </label>
+                <small class="form-help-text">Brief summary that appears in listings (max 300 characters)</small>
+                {{ form.excerpt }}
+                {% if form.excerpt.errors %}
+                    <div class="form-error">{{ form.excerpt.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Featured Image Field -->
+            <div class="form-group">
+                <label for="{{ form.featured_image.id_for_label }}" class="form-label">
+                    <i class="bi bi-image"></i> Featured Image (Optional)
+                </label>
+                <small class="form-help-text">Upload a cover image for your post</small>
+                <div class="image-upload-zone" id="imageUploadZone">
+                    {{ form.featured_image }}
+                    <p>
+                        <i class="bi bi-cloud-arrow-up"></i> Click to upload or drag and drop
+                    </p>
+                </div>
+                {% if form.featured_image.errors %}
+                    <div class="form-error">{{ form.featured_image.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Category Field -->
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}" class="form-label">
+                    <i class="bi bi-tag"></i> Category (Optional)
+                </label>
+                <small class="form-help-text">Select a category to organize your post</small>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="form-error">{{ form.category.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Tags Field -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="bi bi-hashtag"></i> Tags (Optional)
+                </label>
+                <small class="form-help-text">Select multiple tags to help organize and find your post</small>
+                
+                <div class="tags-container">
+                    {% if form.tags %}
+                        <div class="tags-grid">
+                            {% for choice in form.tags %}
+                                <label class="tag-checkbox-label">
+                                    {{ choice.tag }}
+                                    <span class="tag-label">{{ choice.choice_label }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="tags-empty">No tags available. Create tags in the admin panel first.</p>
+                    {% endif %}
+                </div>
+                
+                {% if form.tags.errors %}
+                    <div class="form-error">{{ form.tags.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Content Field -->
+            <div class="form-group">
+                <label for="{{ form.text.id_for_label }}" class="form-label">
+                    <i class="bi bi-body-text"></i> Content *
+                </label>
+                {{ form.text }}
+                {% if form.text.errors %}
+                    <div class="form-error">{{ form.text.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'post_list' %}" class="btn btn-cancel">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+                
+                <button type="submit" name="save_draft" class="btn btn-draft">
+                    <i class="bi bi-hourglass-split"></i> Save as Draft
+                </button>
+                
+                <button type="submit" name="save_publish" class="btn btn-publish">
+                    <i class="bi bi-check-circle"></i> Publish Post
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Auto-save Indicator -->
+    <div class="auto-save-indicator">
+        <i class="bi bi-info-circle"></i> Your draft is automatically saved
+    </div>
+</div>
+
+<script>
+    // Image upload zone hover effect
+    const uploadZone = document.getElementById('imageUploadZone');
+    if (uploadZone) {
+        uploadZone.addEventListener('mouseover', function() {
+            this.classList.add('hover');
+        });
+        uploadZone.addEventListener('mouseout', function() {
+            this.classList.remove('hover');
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "blog_app/dashboards/dashboard_base.html" %}
+
+{% block dashboard_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="fw-bold admin-dashboard-title">
+            <i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard
+        </h1>
+        <p class="text-muted mb-0">Complete site management and analytics</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <!-- Total Posts -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Posts</p>
+                        <h2 class="fw-bold text-primary">{{ total_posts }}</h2>
+                    </div>
+                    <i class="bi bi-newspaper dashboard-stat-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Comments -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Comments</p>
+                        <h2 class="fw-bold text-success">{{ total_comments }}</h2>
+                    </div>
+                    <i class="bi bi-chat-dots dashboard-stat-icon dashboard-stat-icon-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Comments -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Pending Comments</p>
+                        <h2 class="fw-bold text-warning">{{ pending_comments }}</h2>
+                    </div>
+                    <i class="bi bi-exclamation-circle dashboard-stat-icon dashboard-stat-icon-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Authors -->
+    <div class="col-md-3">
+        <div class="card dashboard-stat-card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Active Authors</p>
+                        <h2 class="fw-bold text-info">{{ total_users }}</h2>
+                    </div>
+                    <i class="bi bi-people dashboard-stat-icon dashboard-stat-icon-info"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row g-4">
+    <!-- Recent Posts -->
+    <div class="col-lg-6">
+        <div class="dashboard-section">
+            <h5 class="dashboard-section-title">Recent Posts</h5>
+            {% for post in recent_posts %}
+                <div class="dashboard-item">
+                    <div>
+                        <h6 class="mb-1">
+                            <a href="{% url 'post_detail' slug=post.slug %}" class="text-decoration-none">
+                                {{ post.title|truncatewords:8 }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            by <strong>{{ post.author.username }}</strong> • {{ post.created_date|date:"M d, Y" }}
+                        </small>
+                    </div>
+                    <span class="badge {% if post.published_date %}bg-success{% else %}bg-secondary{% endif %}">
+                        {% if post.published_date %}Published{% else %}Draft{% endif %}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center py-3">No posts yet</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Comments -->
+    <div class="col-lg-6">
+        <div class="dashboard-section">
+            <h5 class="dashboard-section-title">Recent Comments</h5>
+            {% for comment in recent_comments %}
+                <div class="dashboard-item">
+                    <div>
+                        <p class="mb-1">
+                            <strong>{{ comment.author }}</strong> on
+                            <a href="{% url 'post_detail' slug=comment.post.slug %}" class="text-decoration-none">
+                                {{ comment.post.title|truncatewords:5 }}
+                            </a>
+                        </p>
+                        <small class="text-muted d-block">{{ comment.text|truncatewords:15 }}</small>
+                    </div>
+                    <span class="badge {% if comment.approved_comments %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if comment.approved_comments %}✓ Approved{% else %}⏳ Pending{% endif %}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center py-3">No comments yet</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Admin Actions -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="dashboard-section dashboard-actions-bg">
+            <h5 class="fw-bold mb-3">Admin Actions</h5>
+            <div class="admin-actions-container">
+                <a href="{% url 'post_new' %}" class="btn btn-success btn-sm dashboard-action-btn">
+                    <i class="bi bi-pencil-square me-1"></i>Create Post
+                </a>
+                <a href="{% url 'post_list' %}" class="btn btn-info btn-sm dashboard-action-btn">
+                    <i class="bi bi-eye me-1"></i>View All Posts
+                </a>
+                <a href="{% url 'post_draft_list' %}" class="btn btn-warning btn-sm dashboard-action-btn">
+                    <i class="bi bi-file-earmark me-1"></i>View Drafts
+                </a>
+                <a href="/admin/auth/user/" class="btn btn-secondary btn-sm dashboard-action-btn">
+                    <i class="bi bi-people me-1"></i>Manage Users
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

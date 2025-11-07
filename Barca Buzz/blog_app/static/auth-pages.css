@@ -1,0 +1,139 @@
+:root {
+  --auth-primary: #0d6efd;
+  --auth-primary-hover: #0b5ed7;
+  --auth-success: #198754;
+  --auth-success-hover: #157347;
+  --auth-danger: #dc3545;
+  --auth-text-muted: rgba(33, 37, 41, 0.75);
+  --auth-border-color: #e0e0e0;
+  --auth-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+  --auth-gradient-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--auth-gradient-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.brand-icon-svg {
+  font-size: 1.8rem;
+  color: #667eea;
+}
+.brand-text {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+.form-control {
+  border-radius: 12px;
+  border: 2px solid var(--auth-border-color);
+  padding: 0.875rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.form-control:focus {
+  border-color: var(--auth-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25) !important;
+}
+.login-input { border-color: var(--auth-border-color); }
+.login-input:focus { border-color: var(--auth-primary) !important; }
+.login-container, .register-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.login-card, .register-card { width: 100%; max-width: 450px; }
+.login-card-wrapper, .register-card-wrapper {
+  border-radius: 20px; overflow: hidden; box-shadow: var(--auth-shadow-lg);
+}
+.login-header, .register-header { text-align: center; margin-bottom: 2rem; }
+.login-lock-icon { font-size: 3.5rem; color: var(--auth-primary); display: block; margin-bottom: 0.5rem; }
+.login-title { font-size: 2.25rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #1a1a1a; }
+.login-subtitle { font-size: 1rem; }
+.login-label { font-size: 0.95rem; color: #212529; }
+.login-form, .register-form { margin-bottom: 0; }
+.login-error, .register-error-alert {
+  border-radius: 12px; margin-bottom: 1.5rem; border: none;
+}
+.forgot-link { text-align: right; margin-bottom: 1.5rem; }
+.forgot-link a { font-size: 0.9rem; color: var(--auth-primary); text-decoration: none; transition: color 0.3s ease; }
+.forgot-link a:hover { color: var(--auth-primary-hover); text-decoration: underline; }
+.login-btn {
+  border-radius: 12px; background: linear-gradient(135deg, var(--auth-primary) 0%, var(--auth-primary-hover) 100%);
+  border: none; padding: 0.875rem; font-size: 1rem; transition: all 0.3s ease;
+}
+.login-btn:hover {
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13,110,253,0.3) !important;
+  background: linear-gradient(135deg, var(--auth-primary-hover) 0%, #0a58ca 100%); color: #fff;
+}
+.login-btn:active { transform: translateY(0); }
+.login-divider, .register-divider { text-align: center; margin-bottom: 1.5rem; position: relative; }
+.login-divider .divider-line, .register-divider .divider-line { border-top: 2px solid var(--auth-border-color); margin: 0; }
+.login-divider .divider-text, .register-divider .divider-text {
+  color: var(--auth-text-muted); background: white; padding: 0 15px;
+  position: relative; top: -12px; font-size: 0.95rem; display: inline-block;
+}
+.login-register-box { background: #d1e7dd; border-radius: 12px; padding: 1.5rem; margin-top: 0; }
+.login-register-text { font-size: 1rem; margin-bottom: 1rem; }
+.login-register-btn, .register-btn, .register-signin-btn {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--auth-success) 0%, var(--auth-success-hover) 100%);
+  border: none; padding: 0.75rem; font-size: 1rem; transition: all 0.3s ease;
+}
+.login-register-btn:hover, .register-btn:hover, .register-signin-btn:hover {
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(25,135,84,0.3) !important;
+  background: linear-gradient(135deg, var(--auth-success-hover) 0%, #146c43 100%); color: #fff;
+}
+.login-register-btn:active, .register-btn:active, .register-signin-btn:active { transform: translateY(0); }
+/* For register page only, keep max-width: 500px; etc. */
+.register-card { width: 100%; max-width: 500px; }
+.register-icon { font-size: 4rem; color: var(--auth-success); display: block; margin-bottom: 0.5rem; }
+.register-title { font-size: 2.5rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #1a1a1a;}
+.register-subtitle { font-size: 1.1rem; }
+.register-label { font-size: 1rem; color: #212529; }
+.register-error { color: var(--auth-danger); font-size: 0.9rem; margin-top: 0.5rem; }
+.register-error-alert { border-radius: 12px; margin-bottom: 1.5rem; border: none; }
+.register-signin-box { background: #e3f2fd; border-radius: 12px; padding: 1.5rem; margin-top: 0; }
+.register-signin-text { font-size: 1.05rem; margin-bottom: 1rem; }
+.register-signin-btn {
+  border-radius: 12px; background: linear-gradient(135deg, var(--auth-primary) 0%, var(--auth-primary-hover) 100%);
+  border: none; padding: 0.75rem; font-size: 1rem; transition: all 0.3s ease;
+}
+.register-signin-btn:hover {
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13,110,253,0.3) !important;
+  background: linear-gradient(135deg, var(--auth-primary-hover) 0%, #0a58ca 100%); color: #fff;
+}
+.register-signin-btn:active { transform: translateY(0); }
+/* Responsiveness */
+@media (max-width: 768px) {
+  .login-container, .register-container { padding: 1rem; }
+  .login-card, .register-card { max-width: 100%; }
+  .login-title { font-size: 1.9rem; }
+  .register-title { font-size: 2rem; }
+  .login-subtitle, .register-subtitle { font-size: 0.95rem; }
+  .login-header, .register-header { margin-bottom: 1.5rem; }
+  .login-lock-icon, .register-icon { font-size: 3rem; }
+}
+@media (max-width: 480px) {
+  .login-card-wrapper .card-body, .register-card-wrapper .card-body { padding: 1.5rem !important; }
+  .login-title { font-size: 1.5rem; } .register-title { font-size: 1.75rem; }
+  .login-lock-icon, .register-icon { font-size: 2.5rem; }
+  .login-label, .register-label { font-size: 0.9rem; }
+  .login-register-box, .register-signin-box { padding: 1rem; }
+  .login-header, .register-header { margin-bottom: 1rem; }
+  .form-control { font-size: 16px; }
+}
+.form-control:focus, .login-btn:focus, .login-register-btn:focus,
+.register-btn:focus, .register-signin-btn:focus {
+  outline: 2px solid var(--auth-primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .form-control, .login-btn, .login-register-btn, .register-btn, .register-signin-btn, .forgot-link a {
+    transition: none !important;
+  }
+}
+.shadow-xl { box-shadow: var(--auth-shadow-lg) !important; }

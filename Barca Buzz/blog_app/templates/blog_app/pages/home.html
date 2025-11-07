@@ -1,0 +1,60 @@
+{% extends "blog_app/base.html" %}
+{% load static extras %}
+
+{% block content %}
+
+<section class="hero-section text-center my-5">
+    <h1><i class="bi bi-newspaper"></i> Barça Buzz</h1>
+    <p>Stay connected with the latest FC Barcelona news, insights, and community discussions</p>
+    {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg fw-bold mt-3">
+            <i class="bi bi-pencil-square"></i> Start Writing
+        </a>
+    {% endif %}
+</section>
+
+{% if categories %}
+    <div class="categories-container d-flex flex-wrap gap-2 justify-content-center mb-4">
+        {% for c in categories %}
+            <a href="{{ c.get_absolute_url }}" class="post-category">{{ c.name }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<section class="container">
+    <div class="latest-posts-header d-flex align-items-center justify-content-between mb-3">
+        <h3 class="m-0"><i class="bi bi-clock-history"></i> Latest Posts</h3>
+        <a href="{% url 'post_list' %}" class="btn btn-outline-primary btn-sm">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for post in recent_posts %}
+            <div class="col-md-4">
+                <div class="post-card">
+                    {% if post.featured_image %}
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="post-image">
+                    {% endif %}
+                    <div class="post-body">
+                        {% if post.category %}
+                            <span class="post-category">{{ post.category.name }}</span>
+                        {% endif %}
+                        <h5 class="post-title">
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                        </h5>
+                        <p class="post-excerpt">{{ post.excerpt|truncatewords:20 }}</p>
+                        <div class="post-meta">
+                            <span><i class="bi bi-calendar"></i> {{ post.published_date|date:"M d, Y" }}</span>
+                            <span><i class="bi bi-clock"></i> {{ post.text|reading_time }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-posts-message">No posts yet. Create one from your dashboard!</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
