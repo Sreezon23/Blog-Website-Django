@@ -1,0 +1,241 @@
+{% extends "blog_app/base_auth.html" %}
+
+{% block title %}Register - Barça Buzz{% endblock %}
+
+{% block auth_content %}
+<div class="w-full max-w-md animate-fade-in-up">
+    <!-- Register Card -->
+    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+        <!-- Card Header -->
+        <div class="auth-gradient p-8 text-center">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-slow">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Join Barça Buzz</h2>
+            <p class="text-white/80">Create your account and start sharing</p>
+        </div>
+        
+        <!-- Card Body -->
+        <div class="p-8">
+            <!-- Registration Form -->
+            <form method="post" novalidate class="space-y-4">
+                {% csrf_token %}
+
+                <!-- Username Field -->
+                <div class="space-y-2">
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-user-circle mr-2 text-barca-blue"></i>Username
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.username.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Email Field -->
+                <div class="space-y-2">
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-envelope mr-2 text-barca-blue"></i>Email Address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- First Name -->
+                <div class="space-y-2">
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-user mr-2 text-barca-blue"></i>First Name
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.first_name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Last Name -->
+                <div class="space-y-2">
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-user mr-2 text-barca-blue"></i>Last Name
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.last_name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password Field -->
+                <div class="space-y-2">
+                    <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-lock mr-2 text-barca-blue"></i>Password
+                    </label>
+                    <div class="relative">
+                        {{ form.password }}
+                        <button type="button" 
+                                id="togglePassword"
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-barca-blue transition-colors">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="space-y-2">
+                    <label for="{{ form.password_confirm.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-lock mr-2 text-barca-blue"></i>Confirm Password
+                    </label>
+                    <div class="relative">
+                        {{ form.password_confirm }}
+                        <button type="button" 
+                                id="toggleConfirmPassword"
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-barca-blue transition-colors">
+                            <i class="fas fa-eye" id="eyeIconConfirm"></i>
+                        </button>
+                    </div>
+                    {% if form.password_confirm.errors %}
+                        <div class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {% for error in form.password_confirm.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Form Errors -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 animate-slide-up">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
+                            <div>
+                                <strong class="text-red-800">Registration Error!</strong>
+                                {% for error in form.non_field_errors %}
+                                    <div class="text-red-700 text-sm">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full auth-gradient text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 btn-hover-shine">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">or</span>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center">
+                <p class="text-gray-600 mb-4">Already have an account?</p>
+                <a href="{% url 'login' %}" 
+                   class="inline-flex items-center justify-center w-full bg-gradient-to-r from-barca-red to-barca-blue text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="mt-8 text-center">
+        <p class="text-white/80 text-sm">
+            <i class="fas fa-shield-alt mr-2"></i>
+            By joining, you agree to our Terms of Service
+        </p>
+    </div>
+</div>
+
+<script>
+    // Password visibility toggle
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (togglePassword && passwordInput && eyeIcon) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Confirm password visibility toggle
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('{{ form.password_confirm.id_for_label }}');
+    const eyeIconConfirm = document.getElementById('eyeIconConfirm');
+    
+    if (toggleConfirmPassword && confirmPasswordInput && eyeIconConfirm) {
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                eyeIconConfirm.classList.remove('fa-eye');
+                eyeIconConfirm.classList.add('fa-eye-slash');
+            } else {
+                eyeIconConfirm.classList.remove('fa-eye-slash');
+                eyeIconConfirm.classList.add('fa-eye');
+            }
+        });
+    }
+    
+    // Add animation to form inputs on focus
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('animate-pulse-once');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('animate-pulse-once');
+        });
+    });
+</script>
+{% endblock %}

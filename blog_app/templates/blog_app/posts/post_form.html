@@ -1,0 +1,397 @@
+{% extends "blog_app/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Post{% else %}Create Post{% endif %} - Barça Buzz
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
+    
+    <!-- Back Link -->
+    <div class="mb-6">
+        <a href="{% url 'post_list' %}" class="inline-flex items-center text-gray-600 hover:text-barca-blue transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Posts
+        </a>
+    </div>
+
+    <!-- Form Container -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-barca-blue to-barca-red p-8 text-white">
+            <h1 class="text-3xl font-bold mb-2">
+                {% if form.instance.pk %}
+                    <i class="fas fa-edit mr-3"></i>Edit Post
+                {% else %}
+                    <i class="fas fa-pen-fancy mr-3"></i>Create New Post
+                {% endif %}
+            </h1>
+            <p class="text-white/90">
+                {% if form.instance.pk %}
+                    Update your post details below
+                {% else %}
+                    Share your thoughts about FC Barcelona with the community
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+            {% csrf_token %}
+
+            <!-- Form Errors -->
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 animate-slide-up">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <div>
+                            <strong class="text-red-800">Error!</strong>
+                            {% for error in form.non_field_errors %}
+                                <div class="text-red-700">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Title Field -->
+            <div class="space-y-2">
+                <label for="{{ form.title.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-heading mr-2 text-barca-blue"></i>
+                    Title <span class="text-red-500 ml-1">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.title.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Excerpt Field -->
+            <div class="space-y-2">
+                <label for="{{ form.excerpt.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-align-left mr-2 text-barca-blue"></i>
+                    Excerpt <span class="text-gray-400 ml-2">(Optional)</span>
+                </label>
+                <p class="text-sm text-gray-500">Brief summary that appears in listings (max 300 characters)</p>
+                {{ form.excerpt }}
+                {% if form.excerpt.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.excerpt.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Featured Image Field -->
+            <div class="space-y-2">
+                <label for="{{ form.featured_image.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-image mr-2 text-barca-blue"></i>
+                    Featured Image <span class="text-gray-400 ml-2">(Optional)</span>
+                </label>
+                <p class="text-sm text-gray-500">Upload a cover image for your post</p>
+                <div class="relative">
+                    <div id="imageUploadZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-barca-blue transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                        <input type="file" id="{{ form.featured_image.id_for_label }}" name="{{ form.featured_image.name }}" class="hidden" accept="image/*">
+                        {{ form.featured_image }}
+                        <div id="uploadPreview" class="hidden">
+                            <img src="" alt="Preview" class="mx-auto max-h-48 rounded-lg shadow-md">
+                            <p class="mt-2 text-sm text-gray-600">Click to change image</p>
+                        </div>
+                        <div id="uploadPlaceholder">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                        </div>
+                    </div>
+                </div>
+                {% if form.featured_image.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.featured_image.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Category Field -->
+            <div class="space-y-2">
+                <label for="{{ form.category.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-folder mr-2 text-barca-blue"></i>
+                    Category <span class="text-gray-400 ml-2">(Optional)</span>
+                </label>
+                <p class="text-sm text-gray-500">Select a category to organize your post</p>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.category.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Tags Field -->
+            <div class="space-y-2">
+                <label class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-tags mr-2 text-barca-blue"></i>
+                    Tags <span class="text-gray-400 ml-2">(Optional)</span>
+                </label>
+                <p class="text-sm text-gray-500">Select multiple tags to help organize and find your post</p>
+                
+                <div class="space-y-3">
+                    {% if form.tags %}
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {% for choice in form.tags %}
+                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                    {{ choice.tag }}
+                                    <span class="ml-2 text-sm">{{ choice.choice_label }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-info-circle text-gray-400 mr-2"></i>
+                            <span class="text-gray-600">No tags available. Create tags in the admin panel first.</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if form.tags.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.tags.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Rich Text Editor -->
+            <div class="space-y-2">
+                <label class="flex items-center text-gray-700 font-semibold">
+                    <i class="fas fa-file-alt mr-2 text-barca-blue"></i>
+                    Content <span class="text-red-500 ml-1">*</span>
+                </label>
+                <div id="editor-container" class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div id="toolbar" class="border-b border-gray-200 bg-gray-50 p-2 flex flex-wrap gap-1">
+                        <!-- Text Formatting -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <select class="ql-size text-sm">
+                                <option value="small">Small</option>
+                                <option selected>Normal</option>
+                                <option value="large">Large</option>
+                                <option value="huge">Huge</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <button class="ql-bold"><i class="fas fa-bold"></i></button>
+                            <button class="ql-italic"><i class="fas fa-italic"></i></button>
+                            <button class="ql-underline"><i class="fas fa-underline"></i></button>
+                            <button class="ql-strike"><i class="fas fa-strikethrough"></i></button>
+                        </div>
+
+                        <!-- Text Color -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <select class="ql-color"></select>
+                            <select class="ql-background"></select>
+                        </div>
+
+                        <!-- Alignment -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <button class="ql-align" value=""><i class="fas fa-align-left"></i></button>
+                            <button class="ql-align" value="center"><i class="fas fa-align-center"></i></button>
+                            <button class="ql-align" value="right"><i class="fas fa-align-right"></i></button>
+                            <button class="ql-align" value="justify"><i class="fas fa-align-justify"></i></button>
+                        </div>
+
+                        <!-- Lists -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <button class="ql-list" value="ordered"><i class="fas fa-list-ol"></i></button>
+                            <button class="ql-list" value="bullet"><i class="fas fa-list-ul"></i></button>
+                        </div>
+
+                        <!-- Indent -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <button class="ql-indent" value="-1"><i class="fas fa-outdent"></i></button>
+                            <button class="ql-indent" value="+1"><i class="fas fa-indent"></i></button>
+                        </div>
+
+                        <!-- Links -->
+                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
+                            <button class="ql-link"><i class="fas fa-link"></i></button>
+                            <button class="ql-image"><i class="fas fa-image"></i></button>
+                        </div>
+
+                        <!-- Clean -->
+                        <div class="flex items-center">
+                            <button class="ql-clean"><i class="fas fa-eraser"></i></button>
+                        </div>
+                    </div>
+                    <div id="editor" class="min-h-[300px] p-4"></div>
+                </div>
+                {{ form.text }}
+                {% if form.text.errors %}
+                    <div class="text-red-500 text-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        {{ form.text.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'post_list' %}" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+                    <i class="fas fa-times-circle mr-2"></i>
+                    Cancel
+                </a>
+                
+                <button type="submit" name="save_draft" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Save as Draft
+                </button>
+                
+                <button type="submit" name="save_publish" class="px-6 py-3 bg-gradient-to-r from-barca-blue to-barca-red text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Publish Post
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Auto-save Indicator -->
+    <div class="fixed bottom-8 right-8 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden" id="autoSaveIndicator">
+        <i class="fas fa-check-circle mr-2"></i>
+        Draft automatically saved
+    </div>
+</div>
+
+<!-- Hidden div to store initial content -->
+    {% if form.instance.text %}
+        <div id="initial-content" style="display: none;">{{ form.instance.text|safe }}</div>
+    {% endif %}
+
+<!-- Quill.js Rich Text Editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+    // Initialize Quill editor
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Start writing your amazing post about FC Barcelona...',
+        modules: {
+            toolbar: '#toolbar'
+        }
+    });
+
+    // Sync Quill content with hidden form field
+    const textFormField = document.getElementById('{{ form.text.id_for_label }}');
+    
+    // Set initial content if editing
+    var initialContentDiv = document.getElementById('initial-content');
+    if (initialContentDiv) {
+        quill.root.innerHTML = initialContentDiv.innerHTML;
+    }
+
+    // Update hidden field on form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        textFormField.value = quill.root.innerHTML;
+    });
+
+    // Auto-save functionality
+    let autoSaveTimer;
+    quill.on('text-change', function() {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(function() {
+            textFormField.value = quill.root.innerHTML;
+            // Show auto-save indicator
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.classList.remove('hidden');
+            setTimeout(() => {
+                indicator.classList.add('hidden');
+            }, 2000);
+        }, 2000);
+    });
+
+    // Image upload functionality
+    const imageUploadZone = document.getElementById('imageUploadZone');
+    const fileInput = document.getElementById('{{ form.featured_image.id_for_label }}');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+    imageUploadZone.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadPreview.querySelector('img').src = e.target.result;
+                uploadPreview.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Drag and drop
+    imageUploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('border-barca-blue', 'bg-blue-50');
+    });
+
+    imageUploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-barca-blue', 'bg-blue-50');
+    });
+
+    imageUploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-barca-blue', 'bg-blue-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            const event = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(event);
+        }
+    });
+</script>
+
+<style>
+    .ql-toolbar {
+        border-radius: 8px 8px 0 0;
+    }
+    .ql-container {
+        border-radius: 0 0 8px 8px;
+        font-size: 16px;
+    }
+    .ql-editor {
+        min-height: 300px;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+    }
+    .ql-toolbar button {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        margin: 1px;
+    }
+    .ql-toolbar button:hover {
+        background-color: #f3f4f6;
+    }
+    .ql-toolbar button.ql-active {
+        background-color: #e5e7eb;
+        color: #1f2937;
+    }
+    .ql-toolbar select {
+        border-radius: 4px;
+        border: 1px solid #d1d5db;
+        margin: 1px;
+    }
+</style>
+
+{% endblock %}

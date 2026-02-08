@@ -1,0 +1,114 @@
+{% extends "blog_app/base.html" %}
+{% load static %}
+
+{% block title %}Posts tagged "{{ tag.name }}" - Barça Buzz{% endblock %}
+
+{% block content %}
+<!-- PAGE HEADER -->
+<div style="margin-bottom: 40px;">
+    <div style="display: inline-block; padding: 6px 16px; background-color: #4db8c4; color: white; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 15px;">
+        <i class="bi bi-tag"></i> Tag
+    </div>
+    
+    <h1 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 15px; color: #2c2c2c;">
+        {{ tag.name }}
+    </h1>
+    
+    <p style="color: #666; font-size: 1.05rem;">
+        Showing {{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }} tagged with "{{ tag.name }}"
+    </p>
+</div>
+
+<!-- POSTS GRID -->
+{% if posts %}
+<div class="row g-4 mb-5">
+    {% for post in posts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="post-card">
+            {% if post.featured_image %}
+                <img loading="lazy" src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="post-image">
+            {% else %}
+                <div class="post-image" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-image" style="font-size: 2rem; color: #ccc;"></i>
+                </div>
+            {% endif %}
+            
+            <div class="post-body">
+                {% if post.category %}
+                <span class="post-category">{{ post.category.name }}</span>
+                {% endif %}
+                
+                <h3 class="post-title">
+                    <a href="{{ post.get_absolute_url }}" style="text-decoration: none; color: inherit;">
+                        {{ post.title }}
+                    </a>
+                </h3>
+                
+                <p class="post-excerpt">{{ post.excerpt|default:post.text|truncatewords:20 }}</p>
+                
+                <div class="post-meta">
+                    <span class="post-author">
+                        <i class="bi bi-person"></i> {{ post.author.first_name|default:post.author.username }}
+                    </span>
+                    <span class="post-date">
+                        <i class="bi bi-calendar"></i> {{ post.published_date|date:"M d, Y" }}
+                    </span>
+                    <span class="post-views">
+                        <i class="bi bi-eye"></i> {{ post.views_count }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- PAGINATION -->
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center mb-5">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">
+                <i class="bi bi-chevron-double-left"></i> First
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i> Previous
+            </a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                Next <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                Last <i class="bi bi-chevron-double-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div style="text-align: center; padding: 60px 20px;">
+    <i class="bi bi-tag" style="font-size: 4rem; color: #ccc;"></i>
+    <h3 style="color: #666; margin-top: 20px;">No posts with this tag</h3>
+    <p style="color: #999; margin-bottom: 25px;">This tag hasn't been used yet.</p>
+    <a href="{% url 'post_list' %}" class="btn btn-primary" style="background-color: #4db8c4; border: none;">
+        <i class="bi bi-arrow-left"></i> Back to All Posts
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

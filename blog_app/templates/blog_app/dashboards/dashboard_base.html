@@ -1,0 +1,70 @@
+{% extends "blog_app/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="min-h-screen bg-gray-50">
+    <!-- Dashboard Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {% block dashboard_header %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+
+<style>
+.dashboard-stat-card {
+    @apply bg-white rounded-xl shadow-lg border-0 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.dashboard-section {
+    @apply bg-white rounded-xl shadow-lg p-6 mb-8;
+}
+
+.dashboard-section-title {
+    @apply text-2xl font-bold mb-6 pb-4 border-b-2 border-barca-blue;
+}
+
+.dashboard-table {
+    @apply w-full bg-white rounded-xl overflow-hidden;
+}
+
+.dashboard-table th {
+    @apply bg-barca-blue text-white px-6 py-4 text-left font-semibold;
+}
+
+.dashboard-table td {
+    @apply px-6 py-4 border-b border-gray-100;
+}
+
+.dashboard-table tr:hover {
+    @apply bg-gray-50;
+}
+
+.btn-dashboard {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105;
+}
+
+.btn-primary-dashboard {
+    @apply bg-barca-blue text-white hover:bg-blue-700;
+}
+
+.btn-success-dashboard {
+    @apply bg-green-500 text-white hover:bg-green-600;
+}
+
+.btn-danger-dashboard {
+    @apply bg-red-500 text-white hover:bg-red-600;
+}
+
+.btn-warning-dashboard {
+    @apply bg-barca-gold text-white hover:bg-yellow-600;
+}
+</style>
+
+{% endblock %}

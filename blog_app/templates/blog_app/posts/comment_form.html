@@ -1,0 +1,83 @@
+{% extends "blog_app/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white py-4">
+          <h2 class="mb-0">
+            <i class="bi bi-chat-left-plus"></i> Add Your Comment
+          </h2>
+        </div>
+        
+        <div class="card-body p-4">
+          <form method="post" class="needs-validation">
+            {% csrf_token %}
+            
+            <!-- Author Field -->
+            <div class="mb-3">
+              <label for="id_author" class="form-label fw-semibold">
+                <i class="bi bi-person"></i> Your Name
+              </label>
+              {{ form.author }}
+              <small class="form-text text-muted">Tell us your name</small>
+              {% if form.author.errors %}
+                <div class="alert alert-danger mt-2">{{ form.author.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Text/Comment Field -->
+            <div class="mb-4">
+              <label for="id_text" class="form-label fw-semibold">
+                <i class="bi bi-chat"></i> Your Comment
+              </label>
+              {{ form.text }}
+              <small class="form-text text-muted">Share your thoughts (max 5000 characters)</small>
+              {% if form.text.errors %}
+                <div class="alert alert-danger mt-2">{{ form.text.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-send"></i> Post Comment
+              </button>
+              <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="alert alert-info mt-4" role="alert">
+        <i class="bi bi-info-circle"></i> 
+        <strong>Note:</strong> Your comment will be reviewed by the moderators before being published.
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Improve form field styling */
+  textarea, input[type="text"] {
+    border-radius: 0.5rem !important;
+    border: 2px solid #e9ecef !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+    transition: border-color 0.3s ease !important;
+  }
+
+  textarea:focus, input[type="text"]:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+  }
+
+  .form-label {
+    color: #212529;
+    margin-bottom: 0.5rem;
+  }
+</style>
+{% endblock %}

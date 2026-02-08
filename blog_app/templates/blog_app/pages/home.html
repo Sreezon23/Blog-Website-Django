@@ -1,0 +1,257 @@
+{% extends "blog_app/base.html" %}
+{% load static extras %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-barca-blue via-blue-600 to-barca-red text-white py-20 overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="animate-fade-in-up">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                <i class="fas fa-futbol mr-4"></i>
+                <span class="text-gradient-animate">Barça Buzz</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
+                Stay connected with the latest FC Barcelona news, insights, and community discussions
+            </p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" 
+                   class="inline-flex items-center px-8 py-4 bg-white text-barca-blue font-bold rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300 btn-hover-shine">
+                    <i class="fas fa-pen mr-3"></i>
+                    Start Writing
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse-slow"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
+    <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-white/5 rounded-full animate-pulse-slow" style="animation-delay: 2s;"></div>
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 animate-fade-in-up">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Explore Categories</h2>
+            <p class="text-gray-600">Find content that interests you</p>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-4 animate-stagger-1">
+            {% for c in categories %}
+                <a href="{{ c.get_absolute_url }}" 
+                   class="group relative px-6 py-3 bg-white rounded-full shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 card-hover-lift">
+                    <span class="relative z-10 font-medium text-gray-700 group-hover:text-barca-blue transition-colors">
+                        <i class="fas fa-tag mr-2"></i>{{ c.name }}
+                    </span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-barca-blue to-barca-red rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <!-- Trending Posts -->
+    {% if trending_posts %}
+    <section class="mb-16">
+        <div class="flex items-center justify-between mb-8 animate-fade-in-up">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-fire text-orange-500 mr-3"></i>Trending Now
+                </h2>
+                <p class="text-gray-600">Most popular posts from the last 14 days</p>
+            </div>
+            <div class="flex items-center text-orange-500">
+                <i class="fas fa-arrow-trend-up mr-2"></i>
+                <span class="font-medium">Hot Topics</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in trending_posts %}
+                <div class="animate-scale-in animate-stagger-{{ forloop.counter }}">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover-glow group">
+                        {% if post.featured_image %}
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="{{ post.featured_image.url }}" 
+                                     alt="{{ post.title }}" 
+                                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                {% if post.is_featured %}
+                                    <div class="absolute top-4 right-4 bg-barca-gold text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                        <i class="fas fa-star mr-1"></i>Featured
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="p-6">
+                            {% if post.category %}
+                                <span class="inline-block px-3 py-1 bg-barca-blue/10 text-barca-blue rounded-full text-sm font-medium mb-3">
+                                    {{ post.category.name }}
+                                </span>
+                            {% endif %}
+                            
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-barca-blue transition-colors">
+                                <a href="{{ post.get_absolute_url }}" class="hover:underline">
+                                    {{ post.title }}
+                                </a>
+                            </h3>
+                            
+                            {% if post.excerpt %}
+                                <p class="text-gray-600 mb-4 line-clamp-2">{{ post.excerpt|truncatewords:15 }}</p>
+                            {% endif %}
+                            
+                            <div class="flex items-center justify-between text-sm text-gray-500">
+                                <div class="flex items-center space-x-4">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{ post.published_date|date:"M d" }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        {{ post.text|reading_time }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        {{ post.views_count }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-heart mr-1"></i>
+                                        {{ post.likes.count }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Latest Posts -->
+    <section>
+        <div class="flex items-center justify-between mb-8 animate-fade-in-up">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-clock text-barca-blue mr-3"></i>Latest Posts
+                </h2>
+                <p class="text-gray-600">Fresh content from our community</p>
+            </div>
+            <a href="{% url 'post_list' %}" 
+               class="inline-flex items-center px-6 py-3 border-2 border-barca-blue text-barca-blue rounded-full hover:bg-barca-blue hover:text-white transition-all duration-300 btn-hover-lift">
+                View All
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in recent_posts %}
+                <div class="animate-fade-in-up animate-stagger-{{ forloop.counter }}">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover-lift group">
+                        {% if post.featured_image %}
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="{{ post.featured_image.url }}" 
+                                     alt="{{ post.title }}" 
+                                     class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                                {% if post.is_featured %}
+                                    <div class="absolute top-4 right-4 bg-barca-gold text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                        <i class="fas fa-star mr-1"></i>Featured
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="p-6">
+                            {% if post.category %}
+                                <span class="inline-block px-3 py-1 bg-barca-red/10 text-barca-red rounded-full text-sm font-medium mb-3">
+                                    {{ post.category.name }}
+                                </span>
+                            {% endif %}
+                            
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-barca-blue transition-colors">
+                                <a href="{{ post.get_absolute_url }}" class="hover:underline">
+                                    {{ post.title }}
+                                </a>
+                            </h3>
+                            
+                            {% if post.excerpt %}
+                                <p class="text-gray-600 mb-4 line-clamp-2">{{ post.excerpt|truncatewords:15 }}</p>
+                            {% endif %}
+                            
+                            <div class="flex items-center justify-between text-sm text-gray-500">
+                                <div class="flex items-center space-x-4">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{ post.published_date|date:"M d" }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        {{ post.text|reading_time }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        {{ post.views_count }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-heart mr-1"></i>
+                                        {{ post.likes.count }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-full text-center py-12">
+                    <div class="bg-gray-50 rounded-2xl p-12">
+                        <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-600 mb-2">No posts yet</h3>
+                        <p class="text-gray-500 mb-6">Be the first to share your thoughts about FC Barcelona!</p>
+                        <a href="{% url 'post_new' %}" 
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-barca-blue to-barca-red text-white rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            <i class="fas fa-pen mr-2"></i>
+                            Create First Post
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<!-- Call to Action -->
+{% if not user.is_authenticated %}
+<section class="py-16 bg-gradient-to-r from-barca-blue to-barca-red text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Join the Barça Community</h2>
+        <p class="text-xl mb-8 text-white/90">Share your passion, connect with fans, and stay updated with everything FC Barcelona.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'register' %}" 
+               class="px-8 py-4 bg-white text-barca-blue font-bold rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300 btn-hover-shine">
+                <i class="fas fa-user-plus mr-2"></i>
+                Sign Up Now
+            </a>
+            <a href="{% url 'login' %}" 
+               class="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-barca-blue transition-all duration-300">
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Login
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

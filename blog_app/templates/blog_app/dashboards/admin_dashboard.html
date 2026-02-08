@@ -1,0 +1,141 @@
+{% extends "blog_app/dashboards/dashboard_base.html" %}
+{% load static %}
+
+{% block dashboard_header %}
+<div class="flex justify-between items-center">
+    <div>
+        <h1 class="font-bold text-3xl text-gray-800">
+            <i class="fas fa-tachometer-alt mr-2 text-barca-blue"></i>Admin Dashboard
+        </h1>
+        <p class="text-gray-600">Complete site management and analytics</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Posts -->
+    <div class="dashboard-stat-card">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-2">Total Posts</p>
+                <h2 class="text-3xl font-bold text-barca-blue">{{ total_posts }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-barca-blue/10 rounded-full flex items-center justify-center">
+                <i class="fas fa-newspaper text-barca-blue text-lg"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Comments -->
+    <div class="dashboard-stat-card">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-2">Total Comments</p>
+                <h2 class="text-3xl font-bold text-green-600">{{ total_comments }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-comments text-green-600 text-lg"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Comments -->
+    <div class="dashboard-stat-card">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-2">Pending Comments</p>
+                <h2 class="text-3xl font-bold text-yellow-600">{{ pending_comments }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-exclamation-circle text-yellow-600 text-lg"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Authors -->
+    <div class="dashboard-stat-card">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-2">Active Authors</p>
+                <h2 class="text-3xl font-bold text-purple-600">{{ total_users }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-users text-purple-600 text-lg"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Posts -->
+    <div class="dashboard-section">
+        <h2 class="dashboard-section-title">Recent Posts</h2>
+        {% for post in recent_posts %}
+            <div class="flex justify-between items-start p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <div>
+                    <h3 class="font-semibold mb-1">
+                        <a href="{% url 'post_detail' slug=post.slug %}" class="text-barca-blue hover:text-barca-red transition-colors">
+                            {{ post.title|truncatewords:8 }}
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        by <strong>{{ post.author.username }}</strong> • {{ post.created_date|date:"M d, Y" }}
+                    </p>
+                </div>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full {% if post.published_date %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {% if post.published_date %}Published{% else %}Draft{% endif %}
+                </span>
+            </div>
+        {% empty %}
+            <p class="text-gray-500 text-center py-8">No posts yet</p>
+        {% endfor %}
+    </div>
+
+    <!-- Recent Comments -->
+    <div class="dashboard-section">
+        <h2 class="dashboard-section-title">Recent Comments</h2>
+        {% for comment in recent_comments %}
+            <div class="flex justify-between items-start p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <div>
+                    <p class="font-medium mb-1">
+                        <strong>{{ comment.author }}</strong> on
+                        <a href="{% url 'post_detail' slug=comment.post.slug %}" class="text-barca-blue hover:text-barca-red transition-colors">
+                            {{ comment.post.title|truncatewords:5 }}
+                        </a>
+                    </p>
+                    <p class="text-gray-600 text-sm">{{ comment.text|truncatewords:15 }}</p>
+                </div>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full {% if comment.approved_comments %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {% if comment.approved_comments %}✓ Approved{% else %}⏳ Pending{% endif %}
+                </span>
+            </div>
+        {% empty %}
+            <p class="text-gray-500 text-center py-8">No comments yet</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Admin Actions -->
+<div class="dashboard-section mt-8">
+    <h2 class="dashboard-section-title">Admin Actions</h2>
+    <div class="flex flex-wrap gap-4">
+        <a href="{% url 'post_new' %}" class="btn-dashboard btn-success-dashboard">
+            <i class="fas fa-plus mr-2"></i>Create Post
+        </a>
+        <a href="{% url 'post_list' %}" class="btn-dashboard btn-primary-dashboard">
+            <i class="fas fa-eye mr-2"></i>View All Posts
+        </a>
+        <a href="{% url 'post_draft_list' %}" class="btn-dashboard btn-warning-dashboard">
+            <i class="fas fa-file-alt mr-2"></i>View Drafts
+        </a>
+        <a href="/admin/auth/user/" class="btn-dashboard bg-gray-500 text-white hover:bg-gray-600">
+            <i class="fas fa-users mr-2"></i>Manage Users
+        </a>
+    </div>
+</div>
+
+{% endblock %}
