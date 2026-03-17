@@ -1,150 +1,139 @@
 {% extends "blog_app/base.html" %}
-{% load static %}
+{% load static extras %}
 
-{% block title %}Search Results - Barça Buzz{% endblock %}
+{% block title %}Search Results for "{{ query }}" - Barça Buzz{% endblock %}
 
 {% block content %}
-<!-- SEARCH HEADER -->
-<div style="margin-bottom: 40px;">
-    <h1 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 15px; color: #2c2c2c;">
-        <i class="bi bi-search"></i> Search Results
-    </h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     
-    {% if query %}
-    <p style="color: #666; font-size: 1.05rem; margin-bottom: 25px;">
-        Found {{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }} for "<strong>{{ query }}</strong>"
-    </p>
+    <!-- PREMIUM SEARCH HEADER -->
+<section class="relative py-10 mb-10 overflow-hidden rounded-3xl mx-4 sm:mx-6 lg:mx-8">
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black opacity-95"></div>
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
     
-    <!-- SEARCH BOX -->
-    <form method="get" action="{% url 'search' %}" style="margin-bottom: 30px;">
-        <div style="display: flex; gap: 10px;">
-            <input type="text" name="q" value="{{ query }}" placeholder="Search again..." style="
-                flex: 1;
-                padding: 12px 20px;
-                border: 2px solid #e0e0e0;
-                border-radius: 8px;
-                font-family: 'Montserrat', sans-serif;
-                font-size: 1rem;
-                transition: border-color 0.3s ease;
-            "
-            onfocus="this.style.borderColor='#4db8c4';"
-            onblur="this.style.borderColor='#e0e0e0';">
-            <button type="submit" class="btn btn-primary" style="background-color: #4db8c4; border: none; font-weight: 600; padding: 12px 30px;">
-                <i class="bi bi-search"></i> Search
-            </button>
-        </div>
-    </form>
-    {% else %}
-    <p style="color: #999;">Enter a search term to find posts.</p>
-    {% endif %}
-</div>
-
-<!-- RESULTS -->
-{% if posts %}
-<div style="display: grid; gap: 20px;">
-    {% for post in posts %}
-    <div style="background: white; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);"
-    onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.transform='translateY(-2px)';"
-    onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'; this.style.transform='translateY(0)';">
-        <div style="display: grid; grid-template-columns: 200px 1fr; gap: 0;">
-            <!-- Image -->
-            <div style="height: 200px;">
-                {% if post.featured_image %}
-                    <img loading="lazy" src="{{ post.featured_image.url }}" alt="{{ post.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                {% else %}
-                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #4db8c4 0%, #5dc5d1 100%); display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-newspaper" style="font-size: 2.5rem; color: white; opacity: 0.5;"></i>
-                    </div>
-                {% endif %}
-            </div>
+    <div class="relative max-w-7xl mx-auto px-6 text-center text-white">
+        <div class="animate-fade-in-up">
+            <span class="inline-block px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm mb-4 border border-white/20">Discovery</span>
+            <h1 class="text-3xl md:text-5xl font-black mb-4 tracking-tight">Search: "{{ query }}"</h1>
             
-            <!-- Content -->
-            <div style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    {% if post.category %}
-                    <span style="display: inline-block; padding: 4px 12px; background-color: #4db8c4; color: white; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 10px;">
-                        {{ post.category.name }}
-                    </span>
-                    {% endif %}
-                    
-                    <h3 style="margin: 0 0 10px 0; font-weight: 600; font-size: 1.2rem;">
-                        <a href="{{ post.get_absolute_url }}" style="text-decoration: none; color: #2c2c2c;">
-                            {{ post.title }}
-                        </a>
-                    </h3>
-                    
-                    <p style="color: #666; margin: 0 0 15px 0; line-height: 1.5;">
-                        {{ post.excerpt|default:post.text|truncatewords:30 }}
-                    </p>
-                </div>
-                
-                <div style="display: flex; gap: 15px; align-items: center; color: #999; font-size: 0.9rem;">
-                    <span>
-                        <i class="bi bi-person"></i> {{ post.author.first_name|default:post.author.username }}
-                    </span>
-                    <span>
-                        <i class="bi bi-calendar"></i> {{ post.published_date|date:"M d, Y" }}
-                    </span>
-                    <span>
-                        <i class="bi bi-eye"></i> {{ post.views_count }} views
-                    </span>
-                </div>
+            <div class="inline-flex items-center px-4 py-1.5 bg-barca-blue/20 rounded-full text-xs font-semibold backdrop-blur-md border border-barca-blue/30">
+                <i class="fas fa-search mr-2 text-barca-gold"></i>
+                {{ page_obj.paginator.count }} Result{{ page_obj.paginator.count|pluralize }} Found
             </div>
         </div>
     </div>
-    {% endfor %}
+</section>
+
+<!-- REFINED SEARCH BAR -->
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <form method="get" action="{% url 'search' %}" class="relative group">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search again..." 
+               class="w-full pl-14 pr-6 py-4 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-barca-blue focus:ring-4 focus:ring-barca-blue/10 transition-all duration-300 shadow-lg text-lg">
+        <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-barca-blue transition-colors text-xl"></i>
+        <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-barca-blue text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">
+            Find
+        </button>
+    </form>
 </div>
 
-<!-- PAGINATION -->
-{% if is_paginated %}
-<nav aria-label="Page navigation" class="d-flex justify-content-center mt-5 mb-5">
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page=1">
-                <i class="bi bi-chevron-double-left"></i> First
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">
-                <i class="bi bi-chevron-left"></i> Previous
-            </a>
-        </li>
-        {% endif %}
-        
-        <li class="page-item active">
-            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">
-                Next <i class="bi bi-chevron-right"></i>
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">
-                Last <i class="bi bi-chevron-double-right"></i>
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
+<!-- POSTS GRID -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+    {% if posts %}
+    <div class="flex flex-wrap justify-center -mx-4">
+        {% for post in posts %}
+        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+            <div class="animate-fade-in-up animate-stagger-{{ forloop.counter }} h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden card-hover-lift group transition-all duration-300 border border-gray-100 dark:border-gray-700/50 h-full flex flex-col">
+                    {% if post.featured_image %}
+                        <div class="relative h-52 overflow-hidden">
+                            <img src="{{ post.featured_image.url }}" 
+                                 alt="{{ post.title }}" 
+                                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                    {% else %}
+                        <div class="h-52 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-300 dark:text-gray-700 text-5xl"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-widest text-barca-red">
+                            <span>{{ post.category.name|default:"General" }}</span>
+                            <span class="text-gray-400 font-normal">{{ post.published_date|date:"M d, Y" }}</span>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-barca-blue transition-colors line-clamp-2">
+                            <a href="{{ post.get_absolute_url }}">
+                                {{ post.title }}
+                            </a>
+                        </h3>
+                        
+                        <p class="text-gray-600 dark:text-gray-400 mb-6 line-clamp-2 text-sm leading-relaxed flex-1">
+                            {{ post.excerpt|default:post.text|truncatewords:20 }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-barca-blue to-barca-red flex items-center justify-center text-white text-[10px] font-bold">
+                                    {{ post.author.username.0|upper }}
+                                </div>
+                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ post.author.username }}</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-gray-400 text-xs">
+                                <span class="flex items-center"><i class="far fa-eye mr-1"></i> {{ post.views_count }}</span>
+                                <span class="flex items-center"><i class="far fa-clock mr-1"></i> {{ post.text|reading_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-{% else %}
-<div style="text-align: center; padding: 60px 20px;">
-    <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
-    <h3 style="color: #666; margin-top: 20px;">No posts found</h3>
-    {% if query %}
-    <p style="color: #999; margin-bottom: 25px;">Try searching with different keywords.</p>
-    {% else %}
-    <p style="color: #999; margin-bottom: 25px;">Enter a search term to find posts.</p>
+    <!-- PAGINATION -->
+    {% if is_paginated %}
+    <div class="mt-16 flex justify-center">
+        <nav class="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            {% if page_obj.has_previous %}
+                <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-barca-blue text-white font-bold shadow-md shadow-barca-blue/20">
+                        {{ num }}
+                    </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?q={{ query }}&page={{ num }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 font-semibold transition-colors">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?q={{ query }}&page={{ page_obj.next_page_number }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </nav>
+    </div>
     {% endif %}
-    <a href="{% url 'post_list' %}" class="btn btn-primary" style="background-color: #4db8c4; border: none;">
-        <i class="bi bi-arrow-left"></i> Back to All Posts
-    </a>
-</div>
-{% endif %}
 
+    {% else %}
+    <div class="text-center py-20 bg-gray-50 dark:bg-gray-800/30 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800 animate-fade-in-up">
+        <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-search text-gray-300 dark:text-gray-600 text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">No results found</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">We couldn't find any articles matching <span class="font-bold text-gray-800 dark:text-white">"{{ query|default:"" }}"</span>. Try different keywords.</p>
+        <a href="{% url 'home' %}" class="inline-flex items-center px-8 py-3 bg-barca-blue text-white rounded-full font-bold shadow-lg hover:shadow-barca-blue/20 transform hover:-translate-y-1 transition-all">
+            <i class="fas fa-home mr-2"></i> Return Home
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

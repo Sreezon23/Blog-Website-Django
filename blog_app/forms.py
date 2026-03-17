@@ -1,5 +1,5 @@
 from django import forms
-from blog_app.models import Post, Comment
+from blog_app.models import Post, Comment, NewsletterSubscriber, GuestSubmission
 from django.contrib.auth.models import User
 
 class PostForm(forms.ModelForm):
@@ -8,26 +8,24 @@ class PostForm(forms.ModelForm):
         fields = ('title','excerpt','text','category','tags','featured_image')
         widgets = {
             'title': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200',
+                'class': 'w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200',
                 'placeholder': 'Give your post a captivating title...',
                 'required': True
             }),
             'excerpt': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200 resize-none',
+                'class': 'w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200 resize-none',
                 'rows': 3,
                 'maxlength': '300',
                 'placeholder': 'Brief summary (optional)'
             }),
             'text': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200 resize-none',
-                'rows': 12,
-                'placeholder': 'Start writing your story...'
+                'class': 'hidden',
             }),
             'category': forms.Select(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200'
+                'class': 'w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200'
             }),
             'tags': forms.CheckboxSelectMultiple(attrs={
-                'class': 'hidden'
+                'class': 'peer sr-only'
             }),
             'featured_image': forms.FileInput(attrs={
                 'class': 'hidden',
@@ -110,3 +108,43 @@ class UserRegistrationForm(forms.ModelForm):
         if User.objects.filter(email=e).exists():
             raise forms.ValidationError("Email already registered!")
         return e
+
+class NewsletterForm(forms.ModelForm):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg text-gray-900 border-none focus:ring-2 focus:ring-yellow-400 placeholder-gray-500',
+                'placeholder': 'Your email address',
+                'required': True
+            })
+        }
+
+class GuestSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = GuestSubmission
+        fields = ['name', 'email', 'title', 'content']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200',
+                'placeholder': 'Your full name',
+                'required': True
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200',
+                'placeholder': 'Your email address',
+                'required': True
+            }),
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200',
+                'placeholder': 'Article Title',
+                'required': True
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-barca-blue focus:ring-2 focus:ring-barca-blue/20 transition-all duration-200 resize-none',
+                'rows': 10,
+                'placeholder': 'Paste or write your article here...',
+                'required': True
+            }),
+        }

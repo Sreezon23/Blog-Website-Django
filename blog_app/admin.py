@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog_app.models import Post, Comment, Category, Tag, AuthorProfile, PostLike, Bookmark
+from blog_app.models import Post, Comment, Category, Tag, AuthorProfile, PostLike, Bookmark, NewsletterSubscriber, GuestSubmission
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -49,3 +49,15 @@ class PostLikeAdmin(admin.ModelAdmin):
 class BookmarkAdmin(admin.ModelAdmin):
     list_display = ('user','post','created')
     list_filter = ('created',)
+
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    list_display = ('email', 'created_date', 'is_active')
+    list_filter = ('is_active', 'created_date')
+    search_fields = ('email',)
+
+@admin.register(GuestSubmission)
+class GuestSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('title', 'name', 'email', 'created_date', 'is_reviewed')
+    list_filter = ('is_reviewed', 'created_date')
+    search_fields = ('title', 'name', 'email', 'content')

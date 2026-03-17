@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -6,15 +7,16 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q, Count
 from django.contrib import messages
-from .models import Post, Comment, Category, Tag
-from .forms import PostForm, CommentForm, UserRegistrationForm
+from .models import Post, Comment, Category, Tag, PostLike, Bookmark, NewsletterSubscriber, GuestSubmission
+from .forms import PostForm, CommentForm, UserRegistrationForm, NewsletterForm, GuestSubmissionForm
 
+
+from .utils import get_la_liga_standings, get_barca_upcoming_matches, get_knockout_bracket
 
 # ================== STATIC / SIMPLE PAGES ==================
 
 def home(request):
     """Homepage: Displays recent and trending posts."""
-    categories = Category.objects.all()
     recent_posts = Post.objects.filter(status='published').order_by('-published_date')[:9]
 
     # Trending = Most viewed posts in the last 14 days
@@ -24,17 +26,63 @@ def home(request):
         published_date__gte=window
     ).order_by('-views_count', '-published_date')[:5]
 
+    # Fetch La Liga Standings via custom FotMob integration
+    la_liga_table = get_la_liga_standings()
+    
+    # Fetch upcoming matches
+    upcoming_matches = get_barca_upcoming_matches()
+    
+    # Fetch knockout brackets
+    ucl_bracket = get_knockout_bracket(42)
+    copa_bracket = get_knockout_bracket(138)
+
     context = {
-        'categories': categories,
         'recent_posts': recent_posts,
         'trending_posts': trending_posts,
+        'la_liga_table': la_liga_table,
+        'upcoming_matches': upcoming_matches,
+        'ucl_bracket': ucl_bracket,
+        'copa_bracket': copa_bracket,
     }
     return render(request, 'blog_app/pages/home.html', context)
 
+def standings(request):
+    """Full La Liga Standings Page"""
+    la_liga_table = get_la_liga_standings()
+    return render(request, 'blog_app/pages/standings.html', {'la_liga_table': la_liga_table})
 
 def about(request):
     """About page."""
     return render(request, 'blog_app/pages/about.html')
+
+def barca_songs(request):
+    """Barça Songs page."""
+    return render(request, 'blog_app/pages/barca_songs.html')
+
+# ================== FORMS & SUBMISSIONS ==================
+
+def newsletter_subscribe(request):
+    if request.method == 'POST':
+        form = NewsletterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Successfully subscribed to the newsletter!")
+        else:
+            messages.error(request, "This email is already subscribed or invalid.")
+    # Attempt to go back to the page the user was on, default to home
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+def guest_submission(request):
+    if request.method == 'POST':
+        form = GuestSubmissionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your article has been submitted successfully and is pending review!")
+            return redirect('home')
+    else:
+        form = GuestSubmissionForm()
+    
+    return render(request, 'blog_app/pages/guest_article.html', {'form': form})
 
 
 # ================== AUTHENTICATION ==================
@@ -68,10 +116,16 @@ def post_new(request):
             if 'save_draft' in request.POST:
                 post.status = 'draft'
                 messages.success(request, "Draft saved successfully!")
-            elif 'save_publish' in request.POST:
+            elif 'save_publish' in request.POST and request.user.is_superuser:
                 post.status = 'published'
                 post.published_date = timezone.now()
                 messages.success(request, "Post published successfully!")
+            elif 'save_pending' in request.POST:
+                post.status = 'pending'
+                messages.success(request, "Post submitted for review successfully!")
+            else:
+                post.status = 'draft'
+                messages.success(request, "Draft saved successfully!")
             
             post.save()
             form.save_m2m()
@@ -111,6 +165,10 @@ def post_remove(request, slug):
 
 @login_required
 def post_publish(request, slug):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to publish posts.")
+        return redirect('home')
+    
     post = get_object_or_404(Post, slug=slug)
     post.status = 'published'
     post.published_date = timezone.now()
@@ -126,9 +184,24 @@ def post_draft_list(request):
 
 
 def post_list(request):
-    """List all published posts"""
-    posts = Post.objects.filter(status='published').order_by('-published_date')
-    return render(request, 'blog_app/posts/post_list.html', {'posts': posts})
+    """List all published posts with pagination"""
+    post_list = Post.objects.filter(status='published').order_by('-published_date')
+    
+    paginator = Paginator(post_list, 9) # 9 posts per page
+    page = request.GET.get('page')
+    
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+        
+    return render(request, 'blog_app/pages/post_list.html', {
+        'posts': posts,
+        'page_obj': posts,
+        'is_paginated': posts.has_other_pages()
+    })
 
 
 # ================== POST DETAIL ==================
@@ -149,8 +222,8 @@ def post_detail(request, slug):
         status='published'
     ).exclude(id=post.id).distinct()[:4]
 
-    is_liked = request.user.is_authenticated and post.likes.filter(id=request.user.id).exists()
-    is_bookmarked = request.user.is_authenticated and post.bookmarks.filter(id=request.user.id).exists()
+    is_liked = request.user.is_authenticated and PostLike.objects.filter(post=post, user=request.user).exists()
+    is_bookmarked = request.user.is_authenticated and Bookmark.objects.filter(post=post, user=request.user).exists()
 
     return render(request, 'blog_app/posts/post_detail.html', {
         'post': post,
@@ -182,6 +255,10 @@ def add_comment_to_post(request, slug):
 
 @login_required
 def comment_approve(request, pk):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to moderate comments.")
+        return redirect('home')
+        
     comment = get_object_or_404(Comment, pk=pk)
     comment.approve()
     return redirect('post_detail', slug=comment.post.slug)
@@ -189,6 +266,10 @@ def comment_approve(request, pk):
 
 @login_required
 def comment_remove(request, pk):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to moderate comments.")
+        return redirect('home')
+        
     comment = get_object_or_404(Comment, pk=pk)
     slug = comment.post.slug
     comment.delete()
@@ -199,23 +280,74 @@ def comment_remove(request, pk):
 
 def category_posts(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    posts = Post.objects.filter(category=category, status='published').order_by('-published_date')
-    return render(request, 'blog_app/category_posts.html', {'category': category, 'posts': posts})
+    post_list = Post.objects.filter(category=category, status='published').order_by('-published_date')
+    
+    paginator = Paginator(post_list, 9)
+    page = request.GET.get('page')
+    
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+        
+    return render(request, 'blog_app/pages/category_posts.html', {
+        'category': category,
+        'posts': posts,
+        'page_obj': posts,
+        'is_paginated': posts.has_other_pages()
+    })
 
 
 def tag_posts(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
-    posts = Post.objects.filter(tags=tag, status='published').order_by('-published_date')
-    return render(request, 'blog_app/tag_posts.html', {'tag': tag, 'posts': posts})
+    post_list = Post.objects.filter(tags=tag, status='published').order_by('-published_date')
+    
+    paginator = Paginator(post_list, 9)
+    page = request.GET.get('page')
+    
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+        
+    return render(request, 'blog_app/pages/tag_posts.html', {
+        'tag': tag,
+        'posts': posts,
+        'page_obj': posts,
+        'is_paginated': posts.has_other_pages()
+    })
 
 
 def search_results(request):
     query = request.GET.get('q', '')
-    posts = Post.objects.filter(
-        Q(title__icontains=query) | Q(text__icontains=query),
-        status='published'
-    ).distinct() if query else []
-    return render(request, 'blog_app/search_results.html', {'posts': posts, 'query': query})
+    if query:
+        post_list = Post.objects.filter(
+            Q(title__icontains=query) | Q(text__icontains=query) | Q(excerpt__icontains=query),
+            status='published'
+        ).distinct().order_by('-published_date')
+        
+        paginator = Paginator(post_list, 9)
+        page = request.GET.get('page')
+        
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+    else:
+        posts = []
+        
+    return render(request, 'blog_app/pages/search_results.html', {
+        'posts': posts,
+        'query': query,
+        'page_obj': posts if query else None,
+        'is_paginated': posts.has_other_pages() if (query and hasattr(posts, 'has_other_pages')) else False
+    })
 
 
 # ================== DASHBOARDS ==================
@@ -256,6 +388,7 @@ def admin_dashboard(request):
     total_comments = Comment.objects.count()
     pending_comments = Comment.objects.filter(approved_comments=False).count()
     total_users = User.objects.filter(is_active=True).count()
+    pending_posts = Post.objects.filter(status='pending').count()
     
     return render(request, 'blog_app/dashboards/admin_dashboard.html', {
         'posts': posts,
@@ -264,7 +397,39 @@ def admin_dashboard(request):
         'total_posts': total_posts,
         'total_comments': total_comments,
         'pending_comments': pending_comments,
+        'pending_posts': pending_posts,
         'total_users': total_users,
+    })
+
+
+@login_required
+def admin_post_list(request):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to view this page.")
+        return redirect('home')
+        
+    query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    sort_by = request.GET.get('sort', '-created_date')
+    
+    posts = Post.objects.all()
+    
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) | 
+            Q(author__username__icontains=query)
+        )
+        
+    if status_filter:
+        posts = posts.filter(status=status_filter)
+        
+    posts = posts.order_by(sort_by)
+    
+    return render(request, 'blog_app/dashboards/admin_post_list.html', {
+        'posts': posts,
+        'query': query,
+        'status_filter': status_filter,
+        'sort_by': sort_by,
     })
 
 
@@ -273,11 +438,12 @@ def admin_dashboard(request):
 @login_required
 def toggle_like(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    if request.user in post.likes.all():
-        post.likes.remove(request.user)
+    like_qs = PostLike.objects.filter(post=post, user=request.user)
+    if like_qs.exists():
+        like_qs.delete()
         liked = False
     else:
-        post.likes.add(request.user)
+        PostLike.objects.create(post=post, user=request.user)
         liked = True
     return JsonResponse({'liked': liked, 'likes_count': post.likes.count()})
 
@@ -285,10 +451,11 @@ def toggle_like(request, slug):
 @login_required
 def toggle_bookmark(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    if request.user in post.bookmarks.all():
-        post.bookmarks.remove(request.user)
+    bookmark_qs = Bookmark.objects.filter(post=post, user=request.user)
+    if bookmark_qs.exists():
+        bookmark_qs.delete()
         bookmarked = False
     else:
-        post.bookmarks.add(request.user)
+        Bookmark.objects.create(post=post, user=request.user)
         bookmarked = True
     return JsonResponse({'bookmarked': bookmarked})

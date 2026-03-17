@@ -5,6 +5,10 @@ urlpatterns = [
     # ==================== MAIN PAGES ====================
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
+    path('standings/', views.standings, name='standings'),
+    path('songs/', views.barca_songs, name='barca_songs'),
+    path('guest-article/', views.guest_submission, name='guest_submission'),
+    path('newsletter/subscribe/', views.newsletter_subscribe, name='newsletter_subscribe'),
     
     # ==================== POST CRUD ====================
     path('post/new/', views.post_new, name='post_new'),
@@ -31,6 +35,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('user-dashboard/', views.user_dashboard, name='user_dashboard'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-posts/', views.admin_post_list, name='admin_post_list'),
     
     # ==================== INTERACTIONS ====================
     path('post/<slug:slug>/like/', views.toggle_like, name='toggle_like'),

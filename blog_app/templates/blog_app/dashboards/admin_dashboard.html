@@ -4,10 +4,10 @@
 {% block dashboard_header %}
 <div class="flex justify-between items-center">
     <div>
-        <h1 class="font-bold text-3xl text-gray-800">
+        <h1 class="font-bold text-3xl text-gray-800 dark:text-gray-200">
             <i class="fas fa-tachometer-alt mr-2 text-barca-blue"></i>Admin Dashboard
         </h1>
-        <p class="text-gray-600">Complete site management and analytics</p>
+        <p class="text-gray-600 dark:text-gray-400">Complete site management and analytics</p>
     </div>
 </div>
 {% endblock %}
@@ -15,12 +15,12 @@
 {% block dashboard_content %}
 
 <!-- Stats Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
     <!-- Total Posts -->
     <div class="dashboard-stat-card">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-gray-600 text-sm font-medium mb-2">Total Posts</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Total Posts</p>
                 <h2 class="text-3xl font-bold text-barca-blue">{{ total_posts }}</h2>
             </div>
             <div class="w-12 h-12 bg-barca-blue/10 rounded-full flex items-center justify-center">
@@ -29,11 +29,24 @@
         </div>
     </div>
 
+    <!-- Pending Posts -->
+    <div class="dashboard-stat-card">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Pending Posts</p>
+                <h2 class="text-3xl font-bold text-yellow-600">{{ pending_posts }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-file-signature text-yellow-600 text-lg"></i>
+            </div>
+        </div>
+    </div>
+
     <!-- Total Comments -->
     <div class="dashboard-stat-card">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-gray-600 text-sm font-medium mb-2">Total Comments</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Total Comments</p>
                 <h2 class="text-3xl font-bold text-green-600">{{ total_comments }}</h2>
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -46,7 +59,7 @@
     <div class="dashboard-stat-card">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-gray-600 text-sm font-medium mb-2">Pending Comments</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Pending Comments</p>
                 <h2 class="text-3xl font-bold text-yellow-600">{{ pending_comments }}</h2>
             </div>
             <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -59,7 +72,7 @@
     <div class="dashboard-stat-card">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-gray-600 text-sm font-medium mb-2">Active Authors</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Active Authors</p>
                 <h2 class="text-3xl font-bold text-purple-600">{{ total_users }}</h2>
             </div>
             <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -86,8 +99,8 @@
                         by <strong>{{ post.author.username }}</strong> • {{ post.created_date|date:"M d, Y" }}
                     </p>
                 </div>
-                <span class="px-2 py-1 text-xs font-semibold rounded-full {% if post.published_date %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                    {% if post.published_date %}Published{% else %}Draft{% endif %}
+                <span class="px-2 py-1 text-xs font-semibold rounded-full {% if post.status == 'published' %}bg-green-100 text-green-800{% elif post.status == 'pending' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ post.get_status_display }}
                 </span>
             </div>
         {% empty %}
@@ -126,8 +139,8 @@
         <a href="{% url 'post_new' %}" class="btn-dashboard btn-success-dashboard">
             <i class="fas fa-plus mr-2"></i>Create Post
         </a>
-        <a href="{% url 'post_list' %}" class="btn-dashboard btn-primary-dashboard">
-            <i class="fas fa-eye mr-2"></i>View All Posts
+        <a href="{% url 'admin_post_list' %}" class="btn-dashboard btn-primary-dashboard">
+            <i class="fas fa-filter mr-2"></i>Manage All Posts
         </a>
         <a href="{% url 'post_draft_list' %}" class="btn-dashboard btn-warning-dashboard">
             <i class="fas fa-file-alt mr-2"></i>View Drafts

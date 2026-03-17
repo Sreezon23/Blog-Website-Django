@@ -46,7 +46,7 @@ class Tag(models.Model):
         return reverse('tag_posts', kwargs={'slug': self.slug})
 
 class Post(models.Model):
-    STATUS_CHOICES = (('draft','Draft'),('published','Published'),('archived','Archived'))
+    STATUS_CHOICES = (('draft','Draft'), ('pending', 'Pending Review'), ('published','Published'), ('archived','Archived'))
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
@@ -56,7 +56,7 @@ class Post(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
     featured_image = models.ImageField(upload_to='featured_images/', blank=True, null=True)
     is_featured = models.BooleanField(default=False)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='draft')
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -142,3 +142,22 @@ class Bookmark(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     class Meta:
         unique_together = ('user','post')
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.email
+
+class GuestSubmission(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    title = models.CharField(max_length=250)
+    content = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    is_reviewed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.title} by {self.name}"

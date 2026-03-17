@@ -1,126 +1,154 @@
 {% extends "blog_app/base.html" %}
-{% load static %}
+{% load static extras %}
 
 {% block title %}{{ category.name }} - Barça Buzz{% endblock %}
 
 {% block content %}
-<!-- PAGE HEADER -->
-<div style="background: linear-gradient(135deg, #4db8c4 0%, #5dc5d1 100%); color: white; padding: 40px 30px; border-radius: 12px; margin-bottom: 40px;">
-    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-        {% if category.icon %}<i class="bi {{ category.icon }}" style="font-size: 2rem;"></i>{% endif %}
-        <h1 style="margin: 0; font-size: 2rem; font-weight: 700;">{{ category.name }}</h1>
+<!-- PREMIUM CATEGORY HEADER -->
+<section class="relative py-16 mb-12 overflow-hidden rounded-3xl mx-4 sm:mx-6 lg:mx-8">
+    <div class="absolute inset-0 bg-gradient-to-br from-barca-blue via-blue-600 to-barca-red opacity-90"></div>
+    <div class="absolute inset-0 bg-[url('{% static "blog_app/img/pattern.png" %}')] opacity-10"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-6 text-center text-white">
+        <div class="animate-fade-in-up">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6 backdrop-blur-sm">
+                {% if category.icon %}
+                    <i class="bi {{ category.icon }} text-4xl"></i>
+                {% else %}
+                    <i class="fas fa-tag text-4xl"></i>
+                {% endif %}
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">{{ category.name }}</h1>
+            
+            {% if category.description %}
+                <p class="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-6">{{ category.description }}</p>
+            {% endif %}
+            
+            <div class="inline-flex items-center px-4 py-2 bg-black/20 rounded-full text-sm font-semibold backdrop-blur-md">
+                <i class="fas fa-newspaper mr-2"></i>
+                {{ page_obj.paginator.count }} Post{{ page_obj.paginator.count|pluralize }}
+            </div>
+        </div>
     </div>
-    
-    {% if category.description %}
-    <p style="margin: 0; opacity: 0.95; font-size: 1.05rem;">{{ category.description }}</p>
-    {% endif %}
-    
-    <small style="display: block; margin-top: 10px;">{{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}</small>
-</div>
+</section>
 
-<!-- OTHER CATEGORIES -->
+<!-- CATEGORY FILTER BAR -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
 {% if categories %}
-<div class="categories-bar" style="margin-bottom: 30px;">
-    <a href="{% url 'post_list' %}" class="category-badge">
-        <i class="bi bi-grid-3x3-gap"></i> All Posts
-    </a>
-    {% for cat in categories %}
-    <a href="{{ cat.get_absolute_url }}" class="category-badge {% if cat.id == category.id %}active{% endif %}">
-        {% if cat.icon %}<i class="bi {{ cat.icon }}"></i>{% endif %}
-        {{ cat.name }}
-    </a>
-    {% endfor %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+    <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="{% url 'post_list' %}" 
+           class="px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-barca-blue hover:text-barca-blue bg-white dark:bg-gray-800/50 text-xs font-bold transition-all">
+            All Posts
+        </a>
+        {% for cat in categories %}
+        <a href="{{ cat.get_absolute_url }}" 
+           class="px-5 py-2 rounded-full border text-xs font-bold transition-all {% if cat.id == category.id %}bg-barca-blue border-barca-blue text-white shadow-lg shadow-barca-blue/20{% else %}border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-barca-blue hover:text-barca-blue bg-white dark:bg-gray-800/50{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
 </div>
 {% endif %}
 
 <!-- POSTS GRID -->
-{% if posts %}
-<div class="row g-4 mb-5">
-    {% for post in posts %}
-    <div class="col-md-6 col-lg-4">
-        <div class="post-card">
-            {% if post.featured_image %}
-                <img loading="lazy" src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="post-image">
-            {% else %}
-                <div class="post-image" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-image" style="font-size: 2rem; color: #ccc;"></i>
-                </div>
-            {% endif %}
-            
-            <div class="post-body">
-                <span class="post-category">{{ category.name }}</span>
-                
-                <h3 class="post-title">
-                    <a href="{{ post.get_absolute_url }}" style="text-decoration: none; color: inherit;">
-                        {{ post.title }}
-                    </a>
-                </h3>
-                
-                <p class="post-excerpt">{{ post.excerpt|default:post.text|truncatewords:20 }}</p>
-                
-                <div class="post-meta">
-                    <span class="post-author">
-                        <i class="bi bi-person"></i> {{ post.author.first_name|default:post.author.username }}
-                    </span>
-                    <span class="post-date">
-                        <i class="bi bi-calendar"></i> {{ post.published_date|date:"M d, Y" }}
-                    </span>
-                    <span class="post-views">
-                        <i class="bi bi-eye"></i> {{ post.views_count }}
-                    </span>
-                </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+    {% if posts %}
+    <div class="flex flex-wrap justify-center -mx-4">
+        {% for post in posts %}
+        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+            <div class="animate-fade-in-up animate-stagger-{{ forloop.counter }} h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden card-hover-lift group transition-all duration-300 border border-gray-100 dark:border-gray-700/50 h-full flex flex-col">
+                    {% if post.featured_image %}
+                        <div class="relative h-52 overflow-hidden">
+                            <img src="{{ post.featured_image.url }}" 
+                                 alt="{{ post.title }}" 
+                                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                    {% else %}
+                        <div class="h-52 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-300 dark:text-gray-700 text-5xl"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-widest text-barca-red">
+                            <span>analysis</span>
+                            <span class="text-gray-400 font-normal">MAR 17, 2026</span>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-barca-blue transition-colors line-clamp-2">
+                            <a href="{{ post.get_absolute_url }}">
+                                {{ post.title }}
+                            </a>
+                        </h3>
+                        
+                        <p class="text-gray-600 dark:text-gray-400 mb-6 line-clamp-2 text-sm leading-relaxed flex-1">
+                            {{ post.excerpt|default:post.text|truncatewords:20 }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-barca-blue to-barca-red flex items-center justify-center text-white text-[10px] font-bold">
+                                    {{ post.author.username.0|upper }}
+                                </div>
+                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ post.author.username }}</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-gray-400 text-xs text-[10px]">
+                                <span class="flex items-center"><i class="far fa-eye mr-1"></i> {{ post.views_count }}</span>
+                                <span class="flex items-center"><i class="far fa-clock mr-1"></i> 1 min read</span>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+
+
+    <!-- PAGINATION -->
+    {% if is_paginated %}
+    <div class="mt-16 flex justify-center">
+        <nav class="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-barca-blue text-white font-bold shadow-md shadow-barca-blue/20">
+                        {{ num }}
+                    </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 font-semibold transition-colors">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-20 bg-gray-50 dark:bg-gray-800/30 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800 animate-fade-in-up">
+        <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-newspaper text-gray-300 dark:text-gray-600 text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">No posts in this category yet</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">We're working hard to bring you the best content about {{ category.name }}. Check back soon!</p>
+        <a href="{% url 'post_list' %}" class="inline-flex items-center px-8 py-3 bg-barca-blue text-white rounded-full font-bold shadow-lg hover:shadow-barca-blue/20 transform hover:-translate-y-1 transition-all">
+            <i class="fas fa-arrow-left mr-2"></i> Browse All Posts
+        </a>
+    </div>
+    {% endif %}
 </div>
-
-<!-- PAGINATION -->
-{% if is_paginated %}
-<nav aria-label="Page navigation" class="d-flex justify-content-center mb-5">
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page=1">
-                <i class="bi bi-chevron-double-left"></i> First
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                <i class="bi bi-chevron-left"></i> Previous
-            </a>
-        </li>
-        {% endif %}
-        
-        <li class="page-item active">
-            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                Next <i class="bi bi-chevron-right"></i>
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
-                Last <i class="bi bi-chevron-double-right"></i>
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
-
-{% else %}
-<div style="text-align: center; padding: 60px 20px;">
-    <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-    <h3 style="color: #666; margin-top: 20px;">No posts in this category yet</h3>
-    <p style="color: #999; margin-bottom: 25px;">Check back soon for content about {{ category.name }}!</p>
-    <a href="{% url 'post_list' %}" class="btn btn-primary" style="background-color: #4db8c4; border: none;">
-        <i class="bi bi-arrow-left"></i> Back to All Posts
-    </a>
-</div>
-{% endif %}
-
 {% endblock %}

@@ -6,7 +6,12 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'blog_app', 'templates', 'blog_app')
 
 SECRET_KEY = os.getenv("DJ_SECRET_KEY", "django-insecure-q8xs*ehfl$gzq)a_)h1=bxv2*a=)oq*lh+kg6@1*d)+&8pyl2r")
 DEBUG = os.getenv("DJ_DEBUG", "true").lower() == "true"
-ALLOWED_HOSTS = os.getenv("DJ_ALLOWED_HOSTS", "").split(",") if os.getenv("DJ_ALLOWED_HOSTS") else []
+# ALLOWED_HOSTS = os.getenv("DJ_ALLOWED_HOSTS", "").split(",") if os.getenv("DJ_ALLOWED_HOSTS") else []
+ALLOWED_HOSTS = [
+    "macrometeorological-santa-criticisingly.ngrok-free.dev",
+    "127.0.0.1",
+    "localhost"
+]
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -43,6 +48,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "blog_app.context_processors.global_categories",
             ],
         },
     },

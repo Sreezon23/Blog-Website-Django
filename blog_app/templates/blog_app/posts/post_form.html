@@ -17,7 +17,7 @@
     </div>
 
     <!-- Form Container -->
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
         <!-- Header -->
         <div class="bg-gradient-to-r from-barca-blue to-barca-red p-8 text-white">
             <h1 class="text-3xl font-bold mb-2">
@@ -57,7 +57,7 @@
 
             <!-- Title Field -->
             <div class="space-y-2">
-                <label for="{{ form.title.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                <label for="{{ form.title.id_for_label }}" class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-heading mr-2 text-barca-blue"></i>
                     Title <span class="text-red-500 ml-1">*</span>
                 </label>
@@ -72,7 +72,7 @@
 
             <!-- Excerpt Field -->
             <div class="space-y-2">
-                <label for="{{ form.excerpt.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                <label for="{{ form.excerpt.id_for_label }}" class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-align-left mr-2 text-barca-blue"></i>
                     Excerpt <span class="text-gray-400 ml-2">(Optional)</span>
                 </label>
@@ -88,13 +88,13 @@
 
             <!-- Featured Image Field -->
             <div class="space-y-2">
-                <label for="{{ form.featured_image.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                <label for="{{ form.featured_image.id_for_label }}" class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-image mr-2 text-barca-blue"></i>
-                    Featured Image <span class="text-gray-400 ml-2">(Optional)</span>
+                    Featured Image <span class="text-gray-400 dark:text-gray-500 ml-2">(Optional)</span>
                 </label>
-                <p class="text-sm text-gray-500">Upload a cover image for your post</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Upload a cover image for your post</p>
                 <div class="relative">
-                    <div id="imageUploadZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-barca-blue transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                    <div id="imageUploadZone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-barca-blue dark:hover:border-barca-blue transition-colors cursor-pointer bg-gray-50 dark:bg-gray-700 group">
                         <input type="file" id="{{ form.featured_image.id_for_label }}" name="{{ form.featured_image.name }}" class="hidden" accept="image/*">
                         {{ form.featured_image }}
                         <div id="uploadPreview" class="hidden">
@@ -102,9 +102,9 @@
                             <p class="mt-2 text-sm text-gray-600">Click to change image</p>
                         </div>
                         <div id="uploadPlaceholder">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                            <p class="text-gray-600">Click to upload or drag and drop</p>
-                            <p class="text-sm text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-500 mb-3 group-hover:text-barca-blue transition-colors"></i>
+                            <p class="text-gray-600 dark:text-gray-300">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500">PNG, JPG, GIF up to 10MB</p>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
 
             <!-- Category Field -->
             <div class="space-y-2">
-                <label for="{{ form.category.id_for_label }}" class="flex items-center text-gray-700 font-semibold">
+                <label for="{{ form.category.id_for_label }}" class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-folder mr-2 text-barca-blue"></i>
                     Category <span class="text-gray-400 ml-2">(Optional)</span>
                 </label>
@@ -134,7 +134,7 @@
 
             <!-- Tags Field -->
             <div class="space-y-2">
-                <label class="flex items-center text-gray-700 font-semibold">
+                <label class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-tags mr-2 text-barca-blue"></i>
                     Tags <span class="text-gray-400 ml-2">(Optional)</span>
                 </label>
@@ -144,9 +144,12 @@
                     {% if form.tags %}
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {% for choice in form.tags %}
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <label class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200 text-gray-700 dark:text-gray-300 has-[:checked]:bg-barca-blue has-[:checked]:text-white has-[:checked]:border-barca-blue has-[:checked]:shadow-md group">
                                     {{ choice.tag }}
-                                    <span class="ml-2 text-sm">{{ choice.choice_label }}</span>
+                                    <div class="flex items-center justify-between w-full">
+                                        <span class="text-sm font-medium">{{ choice.choice_label }}</span>
+                                        <i class="fas fa-check text-xs opacity-0 scale-50 group-has-[:checked]:opacity-100 group-has-[:checked]:scale-100 transition-all duration-200"></i>
+                                    </div>
                                 </label>
                             {% endfor %}
                         </div>
@@ -166,69 +169,52 @@
                 {% endif %}
             </div>
 
-            <!-- Rich Text Editor -->
+            <!-- TipTap Rich Text Editor -->
             <div class="space-y-2">
-                <label class="flex items-center text-gray-700 font-semibold">
+                <label class="flex items-center text-gray-700 dark:text-gray-300 font-semibold">
                     <i class="fas fa-file-alt mr-2 text-barca-blue"></i>
                     Content <span class="text-red-500 ml-1">*</span>
                 </label>
-                <div id="editor-container" class="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <div id="toolbar" class="border-b border-gray-200 bg-gray-50 p-2 flex flex-wrap gap-1">
-                        <!-- Text Formatting -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <select class="ql-size text-sm">
-                                <option value="small">Small</option>
-                                <option selected>Normal</option>
-                                <option value="large">Large</option>
-                                <option value="huge">Huge</option>
-                            </select>
+                <div id="editor-container" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden transition-colors">
+                    <!-- TipTap Custom Toolbar -->
+                    <div id="tiptap-toolbar" class="border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-2 flex flex-wrap gap-1 transition-colors">
+                        <!-- Headings -->
+                        <div class="flex items-center border-r border-gray-300 dark:border-gray-600 pr-2 mr-2">
+                            <button type="button" data-tiptap-command="heading1" onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="toolbar-btn" title="Heading 1"><i class="fas fa-heading text-sm">1</i></button>
+                            <button type="button" data-tiptap-command="heading2" onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="toolbar-btn" title="Heading 2"><i class="fas fa-heading text-sm">2</i></button>
                         </div>
                         
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <button class="ql-bold"><i class="fas fa-bold"></i></button>
-                            <button class="ql-italic"><i class="fas fa-italic"></i></button>
-                            <button class="ql-underline"><i class="fas fa-underline"></i></button>
-                            <button class="ql-strike"><i class="fas fa-strikethrough"></i></button>
+                        <!-- Text Formatting -->
+                        <div class="flex items-center border-r border-gray-300 dark:border-gray-600 pr-2 mr-2">
+                            <button type="button" data-tiptap-command="bold" onclick="editor.chain().focus().toggleBold().run()" class="toolbar-btn" title="Bold"><i class="fas fa-bold"></i></button>
+                            <button type="button" data-tiptap-command="italic" onclick="editor.chain().focus().toggleItalic().run()" class="toolbar-btn" title="Italic"><i class="fas fa-italic"></i></button>
+                            <button type="button" data-tiptap-command="strike" onclick="editor.chain().focus().toggleStrike().run()" class="toolbar-btn" title="Strike"><i class="fas fa-strikethrough"></i></button>
                         </div>
 
-                        <!-- Text Color -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <select class="ql-color"></select>
-                            <select class="ql-background"></select>
+                        <!-- Alignment (via extension or CSS classes if needed) -->
+                        <div class="flex items-center border-r border-gray-300 dark:border-gray-600 pr-2 mr-2">
+                            <button type="button" data-tiptap-command="bulletList" onclick="editor.chain().focus().toggleBulletList().run()" class="toolbar-btn" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                            <button type="button" data-tiptap-command="orderedList" onclick="editor.chain().focus().toggleOrderedList().run()" class="toolbar-btn" title="Ordered List"><i class="fas fa-list-ol"></i></button>
                         </div>
 
-                        <!-- Alignment -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <button class="ql-align" value=""><i class="fas fa-align-left"></i></button>
-                            <button class="ql-align" value="center"><i class="fas fa-align-center"></i></button>
-                            <button class="ql-align" value="right"><i class="fas fa-align-right"></i></button>
-                            <button class="ql-align" value="justify"><i class="fas fa-align-justify"></i></button>
+                        <div class="flex items-center border-r border-gray-300 dark:border-gray-600 pr-2 mr-2">
+                            <button type="button" data-tiptap-command="blockquote" onclick="editor.chain().focus().toggleBlockquote().run()" class="toolbar-btn" title="Blockquote"><i class="fas fa-quote-right"></i></button>
+                            <button type="button" onclick="editor.chain().focus().setHardBreak().run()" class="toolbar-btn" title="Hard Break"><i class="fas fa-level-down-alt fa-rotate-90"></i></button>
                         </div>
 
-                        <!-- Lists -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <button class="ql-list" value="ordered"><i class="fas fa-list-ol"></i></button>
-                            <button class="ql-list" value="bullet"><i class="fas fa-list-ul"></i></button>
+                        <!-- Media -->
+                        <div class="flex items-center border-r border-gray-300 dark:border-gray-600 pr-2 mr-2">
+                            <button type="button" onclick="addImage()" class="toolbar-btn" title="Add Image"><i class="fas fa-image"></i></button>
+                            <button type="button" onclick="addVideo()" class="toolbar-btn" title="Add Video"><i class="fas fa-video"></i></button>
                         </div>
 
-                        <!-- Indent -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <button class="ql-indent" value="-1"><i class="fas fa-outdent"></i></button>
-                            <button class="ql-indent" value="+1"><i class="fas fa-indent"></i></button>
-                        </div>
-
-                        <!-- Links -->
-                        <div class="flex items-center border-r border-gray-300 pr-2 mr-2">
-                            <button class="ql-link"><i class="fas fa-link"></i></button>
-                            <button class="ql-image"><i class="fas fa-image"></i></button>
-                        </div>
-
-                        <!-- Clean -->
+                        <!-- Actions -->
                         <div class="flex items-center">
-                            <button class="ql-clean"><i class="fas fa-eraser"></i></button>
+                            <button type="button" onclick="editor.chain().focus().undo().run()" class="toolbar-btn" title="Undo"><i class="fas fa-undo"></i></button>
+                            <button type="button" onclick="editor.chain().focus().redo().run()" class="toolbar-btn" title="Redo"><i class="fas fa-redo"></i></button>
                         </div>
                     </div>
-                    <div id="editor" class="min-h-[300px] p-4"></div>
+                    <div id="tiptap-editor" class="min-h-[350px] p-6 text-gray-800 dark:text-gray-200 dark:bg-gray-800 prose dark:prose-invert max-w-none focus:outline-none"></div>
                 </div>
                 {{ form.text }}
                 {% if form.text.errors %}
@@ -240,8 +226,8 @@
             </div>
 
             <!-- Form Actions -->
-            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
-                <a href="{% url 'post_list' %}" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <a href="{% url 'post_list' %}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
                     <i class="fas fa-times-circle mr-2"></i>
                     Cancel
                 </a>
@@ -251,10 +237,17 @@
                     Save as Draft
                 </button>
                 
+                {% if user.is_superuser %}
                 <button type="submit" name="save_publish" class="px-6 py-3 bg-gradient-to-r from-barca-blue to-barca-red text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center">
                     <i class="fas fa-paper-plane mr-2"></i>
                     Publish Post
                 </button>
+                {% else %}
+                <button type="submit" name="save_pending" class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Submit for Review
+                </button>
+                {% endif %}
             </div>
         </form>
     </div>
@@ -271,126 +264,202 @@
         <div id="initial-content" style="display: none;">{{ form.instance.text|safe }}</div>
     {% endif %}
 
-<!-- Quill.js Rich Text Editor -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<!-- TipTap Editor Scripts -->
+<script type="module">
+    import { Editor } from 'https://cdn.jsdelivr.net/npm/@tiptap/core@2.1.12/+esm'
+    import StarterKit from 'https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.1.12/+esm'
+    import Placeholder from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-placeholder@2.1.12/+esm'
+    import Image from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-image@2.1.12/+esm'
+    import Youtube from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-youtube@2.1.12/+esm'
 
-<script>
-    // Initialize Quill editor
-    var quill = new Quill('#editor', {
-        theme: 'snow',
-        placeholder: 'Start writing your amazing post about FC Barcelona...',
-        modules: {
-            toolbar: '#toolbar'
-        }
-    });
+    const initialContent = document.getElementById('initial-content')?.innerHTML || ''
+    const textFormField = document.getElementById('{{ form.text.id_for_label }}')
 
-    // Sync Quill content with hidden form field
-    const textFormField = document.getElementById('{{ form.text.id_for_label }}');
-    
-    // Set initial content if editing
-    var initialContentDiv = document.getElementById('initial-content');
-    if (initialContentDiv) {
-        quill.root.innerHTML = initialContentDiv.innerHTML;
+    try {
+        const editor = new Editor({
+            element: document.querySelector('#tiptap-editor'),
+            extensions: [
+                StarterKit.configure({
+                    heading: {
+                        levels: [1, 2, 3],
+                    },
+                }),
+                Placeholder.configure({
+                    placeholder: 'Start writing your amazing post about FC Barcelona...',
+                }),
+                Image.configure({
+                    HTMLAttributes: {
+                        class: 'rounded-lg shadow-md max-w-full h-auto my-4 mx-auto block',
+                    },
+                }),
+                Youtube.configure({
+                    HTMLAttributes: {
+                        class: 'rounded-lg shadow-md aspect-video max-w-full w-full h-auto my-6',
+                    },
+                }),
+            ],
+            content: initialContent,
+            onUpdate({ editor }) {
+                textFormField.value = editor.getHTML()
+                updateToolbarState(editor)
+
+                // Auto-save logic
+                clearTimeout(window.autoSaveTimer)
+                window.autoSaveTimer = setTimeout(() => {
+                    const indicator = document.getElementById('autoSaveIndicator')
+                    if (indicator) {
+                        indicator.classList.remove('hidden')
+                        setTimeout(() => indicator.classList.add('hidden'), 2000)
+                    }
+                }, 5000)
+            },
+            onSelectionUpdate({ editor }) {
+                updateToolbarState(editor)
+            },
+            onCreate({ editor }) {
+                updateToolbarState(editor)
+            },
+        })
+
+        window.editor = editor
+    } catch (error) {
+        console.error('TipTap initialization failed:', error)
+        // Fallback or alert if absolutely necessary, but hopefully this fix works
     }
 
-    // Update hidden field on form submission
-    document.querySelector('form').addEventListener('submit', function(e) {
-        textFormField.value = quill.root.innerHTML;
-    });
+    function updateToolbarState(editor) {
+        const toolbar = document.querySelector('#tiptap-toolbar')
+        if (!toolbar) return
 
-    // Auto-save functionality
-    let autoSaveTimer;
-    quill.on('text-change', function() {
-        clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(function() {
-            textFormField.value = quill.root.innerHTML;
-            // Show auto-save indicator
-            const indicator = document.getElementById('autoSaveIndicator');
-            indicator.classList.remove('hidden');
-            setTimeout(() => {
-                indicator.classList.add('hidden');
-            }, 2000);
-        }, 2000);
-    });
+        const buttons = {
+            heading1: { name: 'heading', attributes: { level: 1 } },
+            heading2: { name: 'heading', attributes: { level: 2 } },
+            bold: { name: 'bold' },
+            italic: { name: 'italic' },
+            strike: { name: 'strike' },
+            bulletList: { name: 'bulletList' },
+            orderedList: { name: 'orderedList' },
+            blockquote: { name: 'blockquote' },
+        }
 
+        Object.entries(buttons).forEach(([id, config]) => {
+            const btn = toolbar.querySelector(`[data-tiptap-command="${id}"]`)
+            if (btn) {
+                if (editor.isActive(config.name, config.attributes || {})) {
+                    btn.classList.add('is-active')
+                } else {
+                    btn.classList.remove('is-active')
+                }
+            }
+        })
+    }
+
+    // Helper functions for media insertion
+    window.addImage = () => {
+        const url = window.prompt('Enter image URL')
+        if (url) {
+            editor.chain().focus().setImage({ src: url }).run()
+        }
+    }
+
+    window.addVideo = () => {
+        const url = window.prompt('Enter YouTube URL')
+        if (url) {
+            editor.chain().focus().setYoutubeVideo({ src: url }).run()
+        }
+    }
+
+    // Sync content on form submission
+    document.querySelector('form').addEventListener('submit', () => {
+        textFormField.value = editor.getHTML()
+    })
+</script>
+
+<script>
     // Image upload functionality
     const imageUploadZone = document.getElementById('imageUploadZone');
     const fileInput = document.getElementById('{{ form.featured_image.id_for_label }}');
     const uploadPreview = document.getElementById('uploadPreview');
     const uploadPlaceholder = document.getElementById('uploadPlaceholder');
 
-    imageUploadZone.addEventListener('click', function() {
-        fileInput.click();
-    });
+    if (imageUploadZone) {
+        imageUploadZone.addEventListener('click', () => fileInput.click());
 
-    fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadPreview.querySelector('img').src = e.target.result;
-                uploadPreview.classList.remove('hidden');
-                uploadPlaceholder.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadPreview.querySelector('img').src = e.target.result;
+                    uploadPreview.classList.remove('hidden');
+                    uploadPlaceholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-    // Drag and drop
-    imageUploadZone.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.classList.add('border-barca-blue', 'bg-blue-50');
-    });
+        // Drag and drop
+        imageUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadZone.classList.add('border-barca-blue', 'bg-blue-50', 'dark:bg-gray-600');
+        });
 
-    imageUploadZone.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-barca-blue', 'bg-blue-50');
-    });
+        imageUploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            imageUploadZone.classList.remove('border-barca-blue', 'bg-blue-50', 'dark:bg-gray-600');
+        });
 
-    imageUploadZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-barca-blue', 'bg-blue-50');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInput.files = files;
-            const event = new Event('change', { bubbles: true });
-            fileInput.dispatchEvent(event);
-        }
-    });
+        imageUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadZone.classList.remove('border-barca-blue', 'bg-blue-50', 'dark:bg-gray-600');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
 </script>
 
 <style>
-    .ql-toolbar {
-        border-radius: 8px 8px 0 0;
-    }
-    .ql-container {
-        border-radius: 0 0 8px 8px;
-        font-size: 16px;
-    }
-    .ql-editor {
-        min-height: 300px;
-        font-family: 'Inter', sans-serif;
-        line-height: 1.6;
-    }
-    .ql-toolbar button {
+    .toolbar-btn {
         width: 32px;
         height: 32px;
-        border-radius: 4px;
-        margin: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: #4b5563; /* gray-600 */
+        transition: all 0.2s;
     }
-    .ql-toolbar button:hover {
-        background-color: #f3f4f6;
+    .dark .toolbar-btn {
+        color: #d1d5db; /* gray-300 */
     }
-    .ql-toolbar button.ql-active {
-        background-color: #e5e7eb;
-        color: #1f2937;
+    .toolbar-btn:hover {
+        background-color: #e5e7eb; /* gray-200 */
+        color: #1a1a1a;
     }
-    .ql-toolbar select {
-        border-radius: 4px;
-        border: 1px solid #d1d5db;
-        margin: 1px;
+    .dark .toolbar-btn:hover {
+        background-color: #374151; /* gray-700 */
+        color: #ffffff;
+    }
+    .toolbar-btn.is-active {
+        background-color: #004D98; /* barca-blue */
+        color: white !important;
+    }
+
+    /* TipTap specific styles */
+    .ProseMirror {
+        min-height: 350px;
+        outline: none !important;
+    }
+    .ProseMirror p.is-editor-empty:first-child::before {
+        content: attr(data-placeholder);
+        float: left;
+        color: #9ca3af;
+        pointer-events: none;
+        height: 0;
     }
 </style>
 
